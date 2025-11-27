@@ -5,9 +5,10 @@ Uses pydantic-settings for environment variable support and validation.
 """
 
 from pathlib import Path
-from typing import Optional, Dict
+from typing import Any, Dict, Optional
+
 from pydantic import BaseModel, Field, field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class ServerConfig(BaseModel):
@@ -72,9 +73,7 @@ class SecurityConfig(BaseModel):
 class ObsidianConfig(BaseModel):
     """Obsidian vault compatibility configuration."""
 
-    enabled: bool = Field(
-        default=True, description="Enable Obsidian-specific features"
-    )
+    enabled: bool = Field(default=True, description="Enable Obsidian-specific features")
     config_sync: bool = Field(
         default=True, description="Import settings from .obsidian/ directory"
     )
@@ -209,12 +208,25 @@ class PerformanceConfig(BaseModel):
 class AppConfig(BaseSettings):
     """
     Main application configuration.
-    
+
     Supports both YAML file and environment variables.
+    Environment variables use the format: MARKDOWN_VAULT_<SECTION>__<KEY>
+
+    Examples:
+        MARKDOWN_VAULT_SERVER__PORT=8080
+        MARKDOWN_VAULT_VAULT__PATH=/path/to/vault
+        MARKDOWN_VAULT_SECURITY__API_KEY=mykey
     """
 
+    model_config = SettingsConfigDict(
+        env_prefix="MARKDOWN_VAULT_",
+        env_nested_delimiter="__",
+        case_sensitive=False,
+        extra="ignore",
+    )
+
     server: ServerConfig = Field(default_factory=ServerConfig)
-    vault: VaultConfig
+    vault: Optional[VaultConfig] = None
     security: SecurityConfig = Field(default_factory=SecurityConfig)
     obsidian: ObsidianConfig = Field(default_factory=ObsidianConfig)
     periodic_notes: PeriodicNotesConfig = Field(default_factory=PeriodicNotesConfig)
@@ -223,10 +235,3 @@ class AppConfig(BaseSettings):
     commands: CommandsConfig = Field(default_factory=CommandsConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
     performance: PerformanceConfig = Field(default_factory=PerformanceConfig)
-
-    class Config:
-        """Pydantic settings config."""
-
-        env_prefix = "MARKDOWN_VAULT_"
-        env_nested_delimiter = "__"
-        case_sensitive = False
