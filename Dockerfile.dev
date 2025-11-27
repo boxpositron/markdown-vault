@@ -10,8 +10,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python development dependencies
+# Copy source code for installation
 COPY pyproject.toml ./
+COPY src/ ./src/
+
+# Install Python development dependencies
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -e ".[dev]"
 
