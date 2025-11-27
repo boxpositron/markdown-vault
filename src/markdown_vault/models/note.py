@@ -6,23 +6,21 @@ full compatibility.
 """
 
 from typing import Any, Dict, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NoteStat(BaseModel):
     """File statistics for a note."""
 
     ctime: int = Field(..., description="Creation time in milliseconds since epoch")
-    mtime: int = Field(
-        ..., description="Modification time in milliseconds since epoch"
-    )
+    mtime: int = Field(..., description="Modification time in milliseconds since epoch")
     size: int = Field(..., description="File size in bytes")
 
 
 class NoteJson(BaseModel):
     """
     JSON representation of a note with metadata.
-    
+
     This matches the response format when using:
     Accept: application/vnd.olrapi.note+json
     """
@@ -37,10 +35,8 @@ class NoteJson(BaseModel):
     )
     stat: NoteStat = Field(..., description="File statistics")
 
-    class Config:
-        """Pydantic config."""
-
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "path": "notes/example.md",
                 "content": "# Example Note\n\nThis is the content.",
@@ -49,12 +45,13 @@ class NoteJson(BaseModel):
                 "stat": {"ctime": 1234567890000, "mtime": 1234567891000, "size": 1024},
             }
         }
+    )
 
 
 class Note(BaseModel):
     """
     Internal note representation.
-    
+
     Used for processing notes before converting to API response format.
     """
 

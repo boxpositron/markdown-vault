@@ -4,7 +4,7 @@ Pydantic models for API requests and responses.
 
 from enum import Enum
 from typing import Dict, List, Optional, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PatchOperation(str, Enum):
@@ -26,25 +26,17 @@ class TargetType(str, Enum):
 class ServerStatus(BaseModel):
     """
     Server status response for GET /.
-    
+
     This is the only endpoint that doesn't require authentication.
     """
 
     ok: str = Field(default="OK", description="Status indicator")
-    service: str = Field(
-        default="markdown-vault", description="Service name"
-    )
-    authenticated: bool = Field(
-        ..., description="Whether the request is authenticated"
-    )
-    versions: Dict[str, str] = Field(
-        ..., description="Version information"
-    )
+    service: str = Field(default="markdown-vault", description="Service name")
+    authenticated: bool = Field(..., description="Whether the request is authenticated")
+    versions: Dict[str, str] = Field(..., description="Version information")
 
-    class Config:
-        """Pydantic config."""
-
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "ok": "OK",
                 "service": "markdown-vault",
@@ -55,12 +47,13 @@ class ServerStatus(BaseModel):
                 },
             }
         }
+    )
 
 
 class APIError(BaseModel):
     """
     Standard error response format.
-    
+
     Matches Obsidian Local REST API error format with 5-digit error codes.
     """
 
@@ -69,15 +62,14 @@ class APIError(BaseModel):
     )
     message: str = Field(..., description="Human-readable error message")
 
-    class Config:
-        """Pydantic config."""
-
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "errorCode": 40401,
                 "message": "File not found: notes/missing.md",
             }
         }
+    )
 
 
 class CommandInfo(BaseModel):
@@ -86,15 +78,14 @@ class CommandInfo(BaseModel):
     id: str = Field(..., description="Unique command identifier")
     name: str = Field(..., description="Human-readable command name")
 
-    class Config:
-        """Pydantic config."""
-
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "id": "create-note",
                 "name": "Create new note",
             }
         }
+    )
 
 
 class CommandList(BaseModel):
