@@ -72,3 +72,11 @@ api_key.txt
 
 # Development
 .ruff_cache/
+
+# Backup files
+*.tar.gz
+*.zip
+vault-backup-*
+
+# Local scripts
+scripts/*.local.sh
