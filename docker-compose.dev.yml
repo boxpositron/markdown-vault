@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  markdown-vault-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: markdown-vault-dev
+    ports:
+      - "27123:27123"
+    volumes:
+      # Mount source code for live development
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./config:/config
+      - ./pyproject.toml:/app/pyproject.toml
+      
+      # Mount test vault
+      - ./test_vault:/vault
+      
+      # Mount certs and logs
+      - ./certs:/certs
+      - ./logs:/logs
+      
+      # Prevent Python cache pollution
+      - /app/src/markdown_vault.egg-info
+    
+    environment:
+      # Development settings
+      - MARKDOWN_VAULT_LOG_LEVEL=DEBUG
+      - MARKDOWN_VAULT_VAULT__PATH=/vault
+      - MARKDOWN_VAULT_SERVER__RELOAD=true
+      - PYTHONPATH=/app/src
+    
+    # Keep container running for development
+    command: tail -f /dev/null
+    
+    # Restart policy for development
+    restart: unless-stopped
+    
+    # Enable interactive terminal
+    stdin_open: true
+    tty: true
