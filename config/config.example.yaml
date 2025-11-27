@@ -1,0 +1,141 @@
+# markdown-vault Configuration Example
+# Copy this file to config.yaml and adjust as needed
+
+# Server configuration
+server:
+  # Bind address (use 0.0.0.0 to accept connections from any interface)
+  host: "127.0.0.1"
+  
+  # Port (27123 is the default Obsidian Local REST API port)
+  port: 27123
+  
+  # Enable HTTPS (recommended)
+  https: true
+  
+  # Auto-reload on code changes (development only)
+  reload: false
+
+# Vault configuration
+vault:
+  # Absolute path to your markdown vault
+  # Replace with your actual vault path
+  path: "/path/to/your/vault"
+  
+  # Create vault directory if it doesn't exist
+  auto_create: true
+  
+  # Watch for file changes (requires watchdog package)
+  watch_files: false
+  
+  # Respect .gitignore files when listing/searching
+  respect_gitignore: true
+
+# Security configuration
+security:
+  # API key for authentication
+  # If null, a key will be auto-generated on first run
+  # You can also set this via MARKDOWN_VAULT_API_KEY environment variable
+  api_key: null
+  
+  # Path to file containing API key (alternative to api_key field)
+  api_key_file: null
+  
+  # SSL certificate paths
+  cert_path: "./certs/server.crt"
+  key_path: "./certs/server.key"
+  
+  # Auto-generate self-signed certificate if missing
+  auto_generate_cert: true
+
+# Obsidian integration
+obsidian:
+  # Enable Obsidian-specific features
+  enabled: true
+  
+  # Sync settings from .obsidian/ directory
+  config_sync: true
+  
+  # Respect Obsidian's excluded files
+  respect_exclusions: true
+
+# Periodic notes configuration
+periodic_notes:
+  daily:
+    enabled: true
+    format: "YYYY-MM-DD"              # Date format
+    folder: "daily/"                  # Folder path (relative to vault)
+    template: "templates/daily.md"    # Template file (optional)
+  
+  weekly:
+    enabled: true
+    format: "YYYY-[W]WW"
+    folder: "weekly/"
+    template: "templates/weekly.md"
+  
+  monthly:
+    enabled: true
+    format: "YYYY-MM"
+    folder: "monthly/"
+    template: null
+  
+  quarterly:
+    enabled: true
+    format: "YYYY-[Q]Q"
+    folder: "quarterly/"
+    template: null
+  
+  yearly:
+    enabled: true
+    format: "YYYY"
+    folder: "yearly/"
+    template: null
+
+# Search configuration
+search:
+  # Maximum number of search results to return
+  max_results: 100
+  
+  # Enable fuzzy matching in searches
+  enable_fuzzy: true
+  
+  # Cache search results (improves performance)
+  cache_results: true
+
+# Active file configuration
+active_file:
+  # Tracking method: session | cookie | redis
+  tracking_method: "session"
+  
+  # Default file to use if no file is active
+  default_file: null
+
+# Commands configuration
+commands:
+  # Enable commands API
+  enabled: true
+  
+  # Directory containing custom command plugins
+  custom_commands_dir: null
+
+# Logging
+logging:
+  # Log level: DEBUG | INFO | WARNING | ERROR
+  level: "INFO"
+  
+  # Log format: json | text
+  format: "json"
+  
+  # Log file path (null = stdout)
+  file: null
+
+# Performance
+performance:
+  # Maximum file size to process (in bytes)
+  # 10485760 = 10MB
+  max_file_size: 10485760
+  
+  # Cache TTL in seconds
+  cache_ttl: 300
+  
+  # Number of Uvicorn worker processes
+  worker_count: 1

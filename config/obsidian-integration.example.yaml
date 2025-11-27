@@ -1,0 +1,103 @@
+# markdown-vault Configuration as Drop-in Replacement for Obsidian Plugin
+# 
+# Use this configuration to REPLACE the Obsidian Local REST API plugin
+# with markdown-vault pointing to your existing Obsidian vault.
+#
+# Key Benefits:
+# - Works when Obsidian is closed
+# - More reliable than the plugin
+# - Can run on servers/containers
+# - Obsidian does NOT need to be running
+#
+# Note: This reads Obsidian's configuration but operates independently
+
+server:
+  host: "127.0.0.1"
+  port: 27123
+  https: true
+  reload: false
+
+vault:
+  # Point to your Obsidian vault directory
+  path: "/Users/username/Documents/MyObsidianVault"
+  
+  # Don't auto-create (vault already exists)
+  auto_create: false
+  
+  # Watch for external file changes
+  # (useful if you still occasionally use Obsidian, but not required)
+  watch_files: true
+  
+  # Respect .gitignore
+  respect_gitignore: true
+
+security:
+  # Generate new API key for markdown-vault
+  # (You can use the same key as Obsidian plugin had, but not required)
+  api_key: null
+  cert_path: "./certs/server.crt"
+  key_path: "./certs/server.key"
+  auto_generate_cert: true
+
+obsidian:
+  # Enable Obsidian vault compatibility features
+  # This reads .obsidian/ configuration but doesn't require Obsidian to run
+  enabled: true
+  
+  # Import configuration from .obsidian/ directory
+  # (periodic notes settings, templates, etc.)
+  config_sync: true
+  
+  # Respect files excluded in Obsidian's settings
+  respect_exclusions: true
+
+periodic_notes:
+  # When config_sync is enabled, these settings will be
+  # imported from Obsidian's periodic notes plugin configuration
+  # Manual settings here will be used as fallbacks
+  
+  daily:
+    enabled: true
+    # These will be overridden by Obsidian config if available
+    format: "YYYY-MM-DD"
+    folder: "Daily Notes/"
+    template: "Templates/Daily Note.md"
+  
+  weekly:
+    enabled: true
+    format: "YYYY-[W]WW"
+    folder: "Weekly Notes/"
+    template: "Templates/Weekly Note.md"
+  
+  monthly:
+    enabled: false
+  
+  quarterly:
+    enabled: false
+  
+  yearly:
+    enabled: false
+
+search:
+  max_results: 100
+  enable_fuzzy: true
+  cache_results: true
+
+active_file:
+  # Session-based tracking works well with Obsidian
+  tracking_method: "session"
+  default_file: null
+
+commands:
+  enabled: true
+  custom_commands_dir: null
+
+logging:
+  level: "INFO"
+  format: "json"
+  file: "./logs/markdown-vault.log"
+
+performance:
+  max_file_size: 10485760
+  cache_ttl: 300
+  worker_count: 1

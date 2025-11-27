@@ -1,0 +1,165 @@
+{
+  "$schema": "https://raw.githubusercontent.com/boxpositron/with-context-mcp/main/src/config/config-schema.json",
+
+  // ===================================================================
+  // markdown-vault Documentation Configuration
+  // ===================================================================
+  // Project: markdown-vault
+  // Type: Python Library/Service (REST API)
+  // Framework: FastAPI
+  //
+  // Documentation Philosophy (Diátaxis Framework):
+  // - LOCAL (Repository): Essential files for getting started, must be self-contained
+  // - VAULT (Obsidian): Deep research, detailed guides, architecture decisions
+  //
+  // Generated: 2025-11-27
+  // ===================================================================
+
+  "version": "2.1",
+  "defaultBehavior": "local",
+
+  // ===================================================================
+  // VAULT PATTERNS - Detailed Documentation & Research
+  // ===================================================================
+  // These files will be delegated to the Obsidian vault for deep exploration
+  // Following Diátaxis: tutorials, guides, reference, explanation
+  "vault": [
+    // Deep Research & Planning Documents
+    "docs/RESEARCH.md",           // Comprehensive API analysis (delegated)
+    "docs/PLAN.md",                // Detailed implementation plan (delegated)
+    "docs/PROJECT_SUMMARY.md",     // Executive summary (delegated)
+    
+    // Detailed Guides (how-to, task-oriented)
+    "docs/guides/**",
+    "docs/tutorials/**",
+    
+    // Architecture & Design Decisions
+    "docs/architecture/**",
+    "docs/adr/**",                 // Architecture Decision Records
+    "docs/design/**",
+    
+    // API Documentation (detailed reference)
+    "docs/api/**",
+    "docs/API.md",
+    "docs/CONFIGURATION.md",
+    "docs/DEVELOPMENT.md",
+    
+    // Research & Exploration
+    "docs/research/**",
+    "docs/exploration/**",
+    "docs/investigations/**",
+    
+    // Meeting Notes & Decisions
+    "docs/meetings/**",
+    "docs/decisions/**",
+    
+    // Change History (detailed)
+    "CHANGELOG.md",
+    
+    // Draft and Work-in-Progress
+    "**/*.draft.md",
+    "**/*.wip.md",
+    "notes/**",
+    "scratch.md"
+  ],
+
+  // ===================================================================
+  // LOCAL PATTERNS - Essential Repository Files
+  // ===================================================================
+  // These files stay in the repository - essential for getting started
+  // README must be self-contained and work without vault access
+  "local": [
+    // ===============================================================
+    // Root Essential Files
+    // ===============================================================
+    "/README.md",                  // Main project documentation (MUST stay local)
+    "/LICENSE",                    // Legal requirements
+    "/CONTRIBUTING.md",            // Contribution guidelines
+    "/STATUS.md",                  // Current project status
+    
+    // ===============================================================
+    // Configuration Files
+    // ===============================================================
+    "/pyproject.toml",             // Python project config
+    "/Dockerfile",
+    "/docker-compose.yml",
+    "/.gitignore",
+    "/.env.example",
+    
+    // ===============================================================
+    // Configuration Examples (stay with code)
+    // ===============================================================
+    "config/**",                   // All config examples stay local
+    
+    // ===============================================================
+    // Source Code Documentation (inline with code)
+    // ===============================================================
+    "src/**/README.md",            // Component-specific docs
+    "src/**/*.md",                 // Inline code documentation
+    
+    // ===============================================================
+    // Test Documentation
+    // ===============================================================
+    "tests/**/README.md",
+    "tests/**/*.md",
+    
+    // ===============================================================
+    // Quick Reference (1-2 pages, getting started)
+    // ===============================================================
+    "docs/QUICKSTART.md",
+    "docs/quick-reference.md",
+    "docs/getting-started.md",
+    
+    // ===============================================================
+    // Scripts Documentation
+    // ===============================================================
+    "scripts/**/README.md",
+    "scripts/**/*.md",
+    
+    // ===============================================================
+    // GitHub & CI/CD
+    // ===============================================================
+    ".github/**/*.md",
+    
+    // ===============================================================
+    // Work-in-Progress (not ready for vault)
+    // ===============================================================
+    "TODO.md",
+    "NOTES.md",
+    "PERSONAL.md",
+    
+    // ===============================================================
+    // System Files (never delegate)
+    // ===============================================================
+    ".DS_Store",
+    "*.log",
+    ".git/**",
+    ".vscode/**",
+    ".idea/**",
+    "__pycache__/**",
+    "*.pyc",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".ruff_cache/**",
+    
+    // ===============================================================
+    // Sensitive Information (NEVER delegate)
+    // ===============================================================
+    ".env",
+    ".envrc",
+    "**/*.secret.md",
+    "**/confidential/**",
+    "certs/**",
+    "*.key",
+    "*.crt",
+    "*.pem"
+  ],
+
+  // ===================================================================
+  // Conflict Resolution Strategy
+  // ===================================================================
+  // When a file matches both vault and local patterns:
+  // - "local-wins": File stays in repository (safer for essential files)
+  // - "vault-wins": File goes to vault (for research/exploration)
+  "conflictResolution": "local-wins"
+}
