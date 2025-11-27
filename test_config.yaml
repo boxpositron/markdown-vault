@@ -1,0 +1,21 @@
+server:
+  host: "127.0.0.1"
+  port: 27124
+  https: true
+  reload: false
+
+vault:
+  path: "./test_vault"
+  auto_create: true
+  watch_files: false
+  respect_gitignore: true
+
+security:
+  api_key: "test-api-key-12345"
+  cert_path: "./test_certs/server.crt"
+  key_path: "./test_certs/server.key"
+  auto_generate_cert: true
+
+logging:
+  level: "INFO"
+  format: "text"
