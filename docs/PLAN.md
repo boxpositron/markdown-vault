@@ -2,7 +2,7 @@
 
 **Project Name**: markdown-vault  
 **Description**: Drop-in replacement for Obsidian Local REST API plugin with standalone service capabilities  
-**Status**: Planning Phase  
+**Status**: Phase 1 - In Progress (Foundation)  
 **Last Updated**: November 27, 2025
 
 ## Project Goals
@@ -170,47 +170,60 @@ markdown-vault/
 
 #### Tasks
 
-1. **Project Setup**
-   - Initialize Python project with `pyproject.toml`
-   - Set up development environment
-   - Configure linting (ruff/black) and type checking (mypy)
-   - Set up pytest with coverage
+1. **Project Setup** ✅ COMPLETED
+   - ✅ Initialize Python project with `pyproject.toml`
+   - ✅ Set up development environment (Docker + local)
+   - ✅ Configure linting (ruff/black) and type checking (mypy)
+   - ✅ Set up pytest with coverage
+   - ✅ Enhanced Makefile with 50+ commands
+   - ✅ Development setup script (scripts/dev-setup.sh)
+   - ✅ Comprehensive documentation (MAKEFILE_GUIDE.md, AGENTS.md)
 
-2. **Configuration System**
-   - Pydantic models for configuration
-   - YAML config file loading
-   - Environment variable support
-   - Config validation
+2. **Configuration System** ✅ COMPLETED
+   - ✅ Pydantic v2 models for configuration
+   - ✅ YAML config file loading
+   - ✅ Environment variable support with MARKDOWN_VAULT_ prefix
+   - ✅ Config validation with detailed error messages
+   - ✅ API key resolution (file, direct, auto-generate)
+   - ✅ Vault auto-creation
 
-3. **Basic FastAPI App**
-   - Application factory pattern
-   - Router registration
-   - CORS and middleware setup
-   - Error handling middleware
+3. **Basic FastAPI App** ✅ COMPLETED
+   - ✅ Application factory pattern (main.py)
+   - ✅ Router registration framework
+   - ✅ CORS middleware setup
+   - ✅ Error handling middleware (config, validation, generic)
+   - ✅ Lifespan management (startup/shutdown)
+   - ✅ Dependency injection system (deps.py)
 
-4. **Authentication & Security**
-   - SSL certificate generation
-   - API key authentication middleware
-   - Bearer token validation
-   - HTTPS server configuration
+4. **Authentication & Security** ✅ COMPLETED
+   - ✅ SSL certificate generation (self-signed with auto-generation)
+   - ✅ API key authentication via Authorization header
+   - ✅ Bearer token validation
+   - ✅ HTTPS server configuration via uvicorn
+   - ✅ Certificate auto-generation with proper SAN fields
 
-5. **Basic Vault Operations**
-   - File reading (GET)
-   - File writing (PUT)
-   - File appending (POST)
-   - File deletion (DELETE)
-   - Directory listing (GET)
+5. **Basic Vault Operations** ⏳ IN PROGRESS
+   - [ ] File reading (GET)
+   - [ ] File writing (PUT)
+   - [ ] File appending (POST)
+   - [ ] File deletion (DELETE)
+   - [ ] Directory listing (GET)
 
-6. **System Endpoints**
-   - `GET /` - Server status
-   - `GET /openapi.yaml` - API spec
-   - `GET /obsidian-local-rest-api.crt` - Certificate
+6. **System Endpoints** ✅ COMPLETED
+   - ✅ `GET /health` - Health check endpoint
+   - ✅ CLI with start/version commands
+   - [ ] `GET /` - Server status
+   - [ ] `GET /openapi.yaml` - API spec
+   - [ ] `GET /obsidian-local-rest-api.crt` - Certificate download
 
 **Deliverables**:
-- Working FastAPI server with HTTPS
-- Basic CRUD operations on markdown files
-- Configuration system
-- Initial test suite
+- ✅ Working FastAPI server with HTTPS
+- ✅ Configuration system with full validation
+- ✅ CLI with server management
+- ✅ Docker development environment with Makefile
+- ✅ Dependency injection framework
+- ⏳ Basic CRUD operations on markdown files (next)
+- ⏳ Initial test suite (next)
 
 ---
 
@@ -427,6 +440,7 @@ markdown-vault/
 ## API Endpoint Implementation Checklist
 
 ### System Endpoints
+- [x] `GET /health` - Health check endpoint
 - [ ] `GET /` - Server status and auth check
 - [ ] `GET /openapi.yaml` - OpenAPI specification
 - [ ] `GET /obsidian-local-rest-api.crt` - SSL certificate download
