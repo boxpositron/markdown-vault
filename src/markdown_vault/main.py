@@ -197,7 +197,11 @@ def create_app(config: AppConfig) -> FastAPI:
     app.add_exception_handler(Exception, generic_error_handler)
 
     # Register API routers
-    # TODO: Add routers when implemented
+    from markdown_vault.api.routes import system
+
+    app.include_router(system.router, tags=["system"])
+
+    # TODO: Add additional routers when implemented
     # from markdown_vault.api.routes import vault, search, periodic_notes
     # app.include_router(vault.router, prefix="/vault", tags=["vault"])
     # app.include_router(search.router, prefix="/search", tags=["search"])
