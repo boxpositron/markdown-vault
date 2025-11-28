@@ -91,12 +91,13 @@ class VaultManager:
         # Remove leading slashes
         filepath = filepath.lstrip("/")
 
-        # Resolve path relative to vault
+        # Resolve path relative to vault (resolve both to handle symlinks)
+        vault_resolved = self.vault_path.resolve()
         full_path = (self.vault_path / filepath).resolve()
 
         # Ensure path is within vault (prevent traversal)
         try:
-            full_path.relative_to(self.vault_path)
+            full_path.relative_to(vault_resolved)
         except ValueError:
             logger.warning(f"Path traversal attempt: {filepath}")
             raise InvalidPathError(f"Path is outside vault: {filepath}")
@@ -347,10 +348,12 @@ class VaultManager:
             raise InvalidPathError(f"Path is not a directory: {directory}")
 
         # List all .md files recursively
+        vault_resolved = self.vault_path.resolve()
         files = []
         for md_file in full_path.rglob("*.md"):
-            # Get relative path from vault root
-            rel_path = md_file.relative_to(self.vault_path)
+            # Get relative path from vault root (use resolved paths for symlink compat)
+            md_resolved = md_file.resolve()
+            rel_path = md_resolved.relative_to(vault_resolved)
             files.append(str(rel_path))
 
         # Sort for consistent ordering
