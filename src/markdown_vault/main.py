@@ -18,10 +18,14 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from markdown_vault.core.active_file import ActiveFileManager
 from markdown_vault.core.config import AppConfig, ConfigError
 
 # Global configuration instance
 _app_config: AppConfig | None = None
+
+# Global active file manager instance
+_active_file_manager: ActiveFileManager | None = None
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +57,34 @@ def set_app_config(config: AppConfig) -> None:
     """
     global _app_config
     _app_config = config
+
+
+def get_active_file_manager() -> ActiveFileManager:
+    """
+    Get the global active file manager.
+
+    Returns:
+        The active file manager instance
+
+    Raises:
+        RuntimeError: If active file manager has not been initialized
+    """
+    if _active_file_manager is None:
+        raise RuntimeError(
+            "Active file manager not initialized. Call create_app() first."
+        )
+    return _active_file_manager
+
+
+def set_active_file_manager(manager: ActiveFileManager) -> None:
+    """
+    Set the global active file manager.
+
+    Args:
+        manager: Active file manager instance
+    """
+    global _active_file_manager
+    _active_file_manager = manager
 
 
 @asynccontextmanager
@@ -166,6 +198,9 @@ def create_app(config: AppConfig) -> FastAPI:
     # Store configuration globally
     set_app_config(config)
 
+    # Initialize active file manager
+    set_active_file_manager(ActiveFileManager())
+
     # Create FastAPI app with metadata
     app = FastAPI(
         title="markdown-vault",
@@ -197,10 +232,11 @@ def create_app(config: AppConfig) -> FastAPI:
     app.add_exception_handler(Exception, generic_error_handler)
 
     # Register API routers
-    from markdown_vault.api.routes import system, vault
+    from markdown_vault.api.routes import active, system, vault
 
     app.include_router(system.router, tags=["system"])
     app.include_router(vault.router, tags=["vault"])
+    app.include_router(active.router, tags=["active"])
 
     # Add health check endpoint
     @app.get("/health", tags=["system"])
@@ -216,4 +252,10 @@ def create_app(config: AppConfig) -> FastAPI:
     return app
 
 
-__all__ = ["create_app", "get_app_config", "set_app_config"]
+__all__ = [
+    "create_app",
+    "get_app_config",
+    "set_app_config",
+    "get_active_file_manager",
+    "set_active_file_manager",
+]
