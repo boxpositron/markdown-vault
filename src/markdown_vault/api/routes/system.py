@@ -5,7 +5,7 @@ This module provides system-level endpoints:
 - GET / - Server status (no authentication required)
 - GET /openapi.yaml - OpenAPI specification (authenticated)
 - GET /server.crt - SSL certificate download (authenticated)
-- GET /obsidian-local-rest-api.crt - SSL certificate download (deprecated, use /server.crt)
+- GET /obsidian-local-rest-api.crt - SSL certificate download (legacy compatibility endpoint)
 """
 
 import logging
@@ -72,7 +72,7 @@ async def get_server_status(
         service="markdown-vault",
         authenticated=is_authenticated,
         versions={
-            "self": "0.1.0",
+            "self": "0.2.0",
             "api": "1.0",
         },
     )
@@ -242,8 +242,7 @@ async def get_ssl_certificate_legacy(
     Download the SSL certificate file (legacy endpoint).
 
     **DEPRECATED**: This endpoint is maintained for backward compatibility
-    with existing integrations that use the old Obsidian-branded path.
-    New integrations should use `/server.crt` instead.
+    with existing integrations. New integrations should use `/server.crt` instead.
 
     Returns the SSL certificate file that can be installed on client
     systems to trust the self-signed certificate. The certificate path

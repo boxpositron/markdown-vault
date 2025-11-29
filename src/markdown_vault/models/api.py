@@ -42,7 +42,7 @@ class ServerStatus(BaseModel):
                 "service": "markdown-vault",
                 "authenticated": False,
                 "versions": {
-                    "self": "0.1.0",
+                    "self": "0.2.0",
                     "api": "1.0",
                 },
             }
@@ -54,7 +54,7 @@ class APIError(BaseModel):
     """
     Standard error response format.
 
-    Matches Obsidian Local REST API error format with 5-digit error codes.
+    Compatible with Obsidian API error format with 5-digit error codes.
     """
 
     errorCode: int = Field(

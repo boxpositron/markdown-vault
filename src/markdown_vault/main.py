@@ -205,11 +205,11 @@ def create_app(config: AppConfig) -> FastAPI:
     app = FastAPI(
         title="markdown-vault",
         description=(
-            "Drop-in replacement for Obsidian Local REST API with standalone "
+            "REST API service compatible with Obsidian API with standalone "
             "service capabilities. Provides a REST API for managing markdown "
             "notes, supporting Obsidian vault compatibility and advanced features."
         ),
-        version="0.1.0",
+        version="0.2.0",
         lifespan=lifespan,
         docs_url="/docs" if config.logging.level == "DEBUG" else None,
         redoc_url="/redoc" if config.logging.level == "DEBUG" else None,
@@ -257,7 +257,7 @@ def create_app(config: AppConfig) -> FastAPI:
         Returns:
             Status information
         """
-        return {"status": "ok", "version": "0.1.0"}
+        return {"status": "ok", "version": "0.2.0"}
 
     return app
 

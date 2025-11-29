@@ -58,7 +58,7 @@ class TestNoteModels:
         )
         stat = NoteStat(ctime=1000, mtime=2000, size=100)
         note_json = note.to_json_format(stat)
-        
+
         assert isinstance(note_json, NoteJson)
         assert note_json.path == "test.md"
         assert note_json.stat == stat
@@ -71,7 +71,7 @@ class TestAPIModels:
         """Test ServerStatus model."""
         status = ServerStatus(
             authenticated=False,
-            versions={"self": "0.1.0"},
+            versions={"self": "0.2.0"},
         )
         assert status.ok == "OK"
         assert status.service == "markdown-vault"
@@ -120,16 +120,14 @@ class TestConfigModels:
         # Valid absolute path
         config = VaultConfig(path="/valid/absolute/path")
         assert config.path == "/valid/absolute/path"
-        
+
         # Invalid relative path
         with pytest.raises(ValueError, match="must be absolute"):
             VaultConfig(path="relative/path")
 
     def test_app_config_creation(self):
         """Test AppConfig creation with required fields."""
-        config = AppConfig(
-            vault=VaultConfig(path="/test/vault")
-        )
+        config = AppConfig(vault=VaultConfig(path="/test/vault"))
         assert config.vault.path == "/test/vault"
         assert config.server.port == 27123
         assert config.security.auto_generate_cert is True

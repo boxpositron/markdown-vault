@@ -1,8 +1,7 @@
 """SSL certificate generation utilities for markdown-vault.
 
 This module provides functions to generate self-signed SSL certificates
-for HTTPS server operation, compatible with the Obsidian Local REST API
-certificate requirements.
+for HTTPS server operation, compatible with Obsidian vault requirements.
 """
 
 import datetime

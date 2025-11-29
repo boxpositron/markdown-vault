@@ -1,7 +1,7 @@
 """
 Pydantic models for notes and note metadata.
 
-These models match the Obsidian Local REST API response format for
+These models are compatible with Obsidian API response format for
 full compatibility.
 """
 

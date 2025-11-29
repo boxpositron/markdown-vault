@@ -23,7 +23,7 @@ from markdown_vault.main import create_app
 
 app = typer.Typer(
     name="markdown-vault",
-    help="Drop-in replacement for Obsidian Local REST API",
+    help="REST API service compatible with Obsidian API",
     add_completion=False,
 )
 
@@ -214,7 +214,7 @@ def start(
 @app.command()
 def version() -> None:
     """Show version information."""
-    console.print("[bold]markdown-vault[/bold] version [green]0.1.0[/green]")
+    console.print("[bold]markdown-vault[/bold] version [green]0.2.0[/green]")
 
 
 def main() -> None:

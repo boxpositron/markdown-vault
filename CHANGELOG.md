@@ -40,9 +40,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **BREAKING**: Rebranding to white-label positioning
   - Project now emphasizes standalone nature with Obsidian compatibility as a feature
-  - All documentation updated to use neutral, professional language
-  - No code changes, only documentation and messaging updates
+  - All documentation, code comments, and docstrings updated to use neutral, professional language
+  - Version bumped from 0.1.0 to 0.2.0 across all files
   - API and functionality remain 100% compatible with previous versions
+  - Updated module docstrings to use "compatible with Obsidian API" instead of "drop-in replacement"
+  - Updated CLI help text and FastAPI descriptions to reflect white-label positioning
 
 ### Added
 - OBSIDIAN_VAULT_COMPATIBILITY.md guide for using with Obsidian vaults

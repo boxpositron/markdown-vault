@@ -5,7 +5,7 @@ Tests the following endpoints:
 - GET / - Server status
 - GET /openapi.yaml - OpenAPI specification
 - GET /server.crt - SSL certificate download
-- GET /obsidian-local-rest-api.crt - SSL certificate download (deprecated)
+- GET /obsidian-local-rest-api.crt - SSL certificate download (legacy compatibility)
 """
 
 import pytest
@@ -106,7 +106,7 @@ class TestServerStatus:
         assert data["service"] == "markdown-vault"
         assert data["authenticated"] is False
         assert "versions" in data
-        assert data["versions"]["self"] == "0.1.0"
+        assert data["versions"]["self"] == "0.2.0"
         assert data["versions"]["api"] == "1.0"
 
     def test_server_status_with_valid_auth(
@@ -589,4 +589,4 @@ class TestSystemIntegration:
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
-        assert data["version"] == "0.1.0"
+        assert data["version"] == "0.2.0"
