@@ -4,7 +4,8 @@ Tests for system API routes.
 Tests the following endpoints:
 - GET / - Server status
 - GET /openapi.yaml - OpenAPI specification
-- GET /obsidian-local-rest-api.crt - SSL certificate download
+- GET /server.crt - SSL certificate download
+- GET /obsidian-local-rest-api.crt - SSL certificate download (deprecated)
 """
 
 import pytest
@@ -213,17 +214,56 @@ class TestOpenAPISpec:
 
 
 class TestSSLCertificate:
-    """Tests for GET /obsidian-local-rest-api.crt endpoint."""
+    """Tests for GET /server.crt endpoint (primary)."""
 
     def test_certificate_download_requires_auth(self, client: TestClient) -> None:
         """Test that certificate download requires authentication."""
-        response = client.get("/obsidian-local-rest-api.crt")
+        response = client.get("/server.crt")
         assert response.status_code == 401
 
     def test_certificate_download_with_valid_auth(
         self, client: TestClient, test_api_key: str
     ) -> None:
         """Test certificate download with valid authentication."""
+        response = client.get(
+            "/server.crt",
+            headers={"Authorization": f"Bearer {test_api_key}"},
+        )
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "application/x-pem-file"
+        assert (
+            "attachment; filename=markdown-vault.crt"
+            in response.headers["content-disposition"]
+        )
+
+        # Check certificate content
+        content = response.text
+        assert "BEGIN CERTIFICATE" in content
+        assert "END CERTIFICATE" in content
+
+    def test_certificate_download_with_invalid_auth(self, client: TestClient) -> None:
+        """Test certificate download with invalid authentication."""
+        response = client.get(
+            "/server.crt",
+            headers={"Authorization": "Bearer invalid-key"},
+        )
+        assert response.status_code == 401
+
+
+class TestSSLCertificateLegacy:
+    """Tests for GET /obsidian-local-rest-api.crt endpoint (deprecated)."""
+
+    def test_legacy_certificate_download_requires_auth(
+        self, client: TestClient
+    ) -> None:
+        """Test that legacy certificate download requires authentication."""
+        response = client.get("/obsidian-local-rest-api.crt")
+        assert response.status_code == 401
+
+    def test_legacy_certificate_download_with_valid_auth(
+        self, client: TestClient, test_api_key: str
+    ) -> None:
+        """Test legacy certificate download with valid authentication."""
         response = client.get(
             "/obsidian-local-rest-api.crt",
             headers={"Authorization": f"Bearer {test_api_key}"},
@@ -240,13 +280,34 @@ class TestSSLCertificate:
         assert "BEGIN CERTIFICATE" in content
         assert "END CERTIFICATE" in content
 
-    def test_certificate_download_with_invalid_auth(self, client: TestClient) -> None:
-        """Test certificate download with invalid authentication."""
+    def test_legacy_certificate_download_with_invalid_auth(
+        self, client: TestClient
+    ) -> None:
+        """Test legacy certificate download with invalid authentication."""
         response = client.get(
             "/obsidian-local-rest-api.crt",
             headers={"Authorization": "Bearer invalid-key"},
         )
         assert response.status_code == 401
+
+    def test_both_endpoints_return_same_content(
+        self, client: TestClient, test_api_key: str
+    ) -> None:
+        """Test that both new and legacy endpoints return the same certificate content."""
+        headers = {"Authorization": f"Bearer {test_api_key}"}
+
+        # Get certificate from new endpoint
+        new_response = client.get("/server.crt", headers=headers)
+        assert new_response.status_code == 200
+
+        # Get certificate from legacy endpoint
+        legacy_response = client.get("/obsidian-local-rest-api.crt", headers=headers)
+        assert legacy_response.status_code == 200
+
+        # Both should return the same certificate content
+        assert new_response.text == legacy_response.text
+        assert "BEGIN CERTIFICATE" in new_response.text
+        assert "END CERTIFICATE" in new_response.text
 
     def test_certificate_not_found(
         self, test_api_key: str, test_vault_dir: Path
@@ -282,7 +343,7 @@ class TestSSLCertificate:
         client = TestClient(app)
 
         response = client.get(
-            "/obsidian-local-rest-api.crt",
+            "/server.crt",
             headers={"Authorization": f"Bearer {test_api_key}"},
         )
         assert response.status_code == 404
@@ -321,7 +382,7 @@ class TestSSLCertificate:
         client = TestClient(app)
 
         response = client.get(
-            "/obsidian-local-rest-api.crt",
+            "/server.crt",
             headers={"Authorization": f"Bearer {test_api_key}"},
         )
         assert response.status_code == 500
@@ -331,6 +392,127 @@ class TestSSLCertificate:
     ) -> None:
         """Test certificate download when path is a directory instead of a file."""
         # Create a directory instead of a file
+        cert_dir = tmp_path / "cert_dir"
+        cert_dir.mkdir()
+
+        config = AppConfig(
+            server=ServerConfig(
+                host="127.0.0.1",
+                port=27123,
+                https=True,
+                reload=False,
+            ),
+            security=SecurityConfig(
+                api_key=test_api_key,
+                cert_path=str(cert_dir),
+                key_path=str(tmp_path / "key.key"),
+                auto_generate_cert=False,
+            ),
+            vault=VaultConfig(
+                path=str(test_vault_dir),
+                auto_create=False,
+                watch_files=False,
+                respect_gitignore=True,
+            ),
+            logging=LoggingConfig(
+                level="DEBUG",
+                format="json",
+            ),
+        )
+
+        app = create_app(config)
+        client = TestClient(app)
+
+        response = client.get(
+            "/server.crt",
+            headers={"Authorization": f"Bearer {test_api_key}"},
+        )
+        assert response.status_code == 500
+
+
+class TestCertificateBackwardCompatibility:
+    """Tests for backward compatibility between certificate endpoints."""
+
+    def test_legacy_endpoint_not_found(
+        self, test_api_key: str, test_vault_dir: Path
+    ) -> None:
+        """Test legacy certificate endpoint when file doesn't exist."""
+        config = AppConfig(
+            server=ServerConfig(
+                host="127.0.0.1",
+                port=27123,
+                https=True,
+                reload=False,
+            ),
+            security=SecurityConfig(
+                api_key=test_api_key,
+                cert_path="/nonexistent/path/cert.crt",
+                key_path="/nonexistent/path/key.key",
+                auto_generate_cert=False,
+            ),
+            vault=VaultConfig(
+                path=str(test_vault_dir),
+                auto_create=False,
+                watch_files=False,
+                respect_gitignore=True,
+            ),
+            logging=LoggingConfig(
+                level="DEBUG",
+                format="json",
+            ),
+        )
+
+        app = create_app(config)
+        client = TestClient(app)
+
+        response = client.get(
+            "/obsidian-local-rest-api.crt",
+            headers={"Authorization": f"Bearer {test_api_key}"},
+        )
+        assert response.status_code == 404
+
+    def test_legacy_endpoint_path_not_configured(
+        self, test_api_key: str, test_vault_dir: Path
+    ) -> None:
+        """Test legacy certificate endpoint when path is not configured."""
+        config = AppConfig(
+            server=ServerConfig(
+                host="127.0.0.1",
+                port=27123,
+                https=True,
+                reload=False,
+            ),
+            security=SecurityConfig(
+                api_key=test_api_key,
+                cert_path="",
+                key_path="",
+                auto_generate_cert=False,
+            ),
+            vault=VaultConfig(
+                path=str(test_vault_dir),
+                auto_create=False,
+                watch_files=False,
+                respect_gitignore=True,
+            ),
+            logging=LoggingConfig(
+                level="DEBUG",
+                format="json",
+            ),
+        )
+
+        app = create_app(config)
+        client = TestClient(app)
+
+        response = client.get(
+            "/obsidian-local-rest-api.crt",
+            headers={"Authorization": f"Bearer {test_api_key}"},
+        )
+        assert response.status_code == 500
+
+    def test_legacy_endpoint_path_is_directory(
+        self, test_api_key: str, test_vault_dir: Path, tmp_path: Path
+    ) -> None:
+        """Test legacy certificate endpoint when path is a directory."""
         cert_dir = tmp_path / "cert_dir"
         cert_dir.mkdir()
 
@@ -387,7 +569,14 @@ class TestSystemIntegration:
         )
         assert response.status_code == 200
 
-        # Test certificate download (with auth)
+        # Test new certificate download endpoint (with auth)
+        response = client.get(
+            "/server.crt",
+            headers={"Authorization": f"Bearer {test_api_key}"},
+        )
+        assert response.status_code == 200
+
+        # Test legacy certificate download endpoint (with auth)
         response = client.get(
             "/obsidian-local-rest-api.crt",
             headers={"Authorization": f"Bearer {test_api_key}"},

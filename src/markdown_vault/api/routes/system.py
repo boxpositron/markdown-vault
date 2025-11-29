@@ -4,7 +4,8 @@ System API routes for markdown-vault.
 This module provides system-level endpoints:
 - GET / - Server status (no authentication required)
 - GET /openapi.yaml - OpenAPI specification (authenticated)
-- GET /obsidian-local-rest-api.crt - SSL certificate download (authenticated)
+- GET /server.crt - SSL certificate download (authenticated)
+- GET /obsidian-local-rest-api.crt - SSL certificate download (deprecated, use /server.crt)
 """
 
 import logging
@@ -128,7 +129,7 @@ async def get_openapi_spec(
 
 
 @router.get(
-    "/obsidian-local-rest-api.crt",
+    "/server.crt",
     response_class=FileResponse,
     summary="Download SSL certificate",
     description=(
@@ -157,6 +158,9 @@ async def get_ssl_certificate(
     Returns the SSL certificate file that can be installed on client
     systems to trust the self-signed certificate. The certificate path
     is read from the application configuration.
+
+    This is the primary endpoint for certificate download. Use this
+    endpoint for new integrations.
 
     Args:
         api_key: Validated API key (from dependency)
@@ -198,6 +202,93 @@ async def get_ssl_certificate(
 
     # Return certificate file
     logger.info(f"Serving certificate file: {cert_path}")
+    return FileResponse(
+        path=cert_path,
+        media_type="application/x-pem-file",
+        filename="markdown-vault.crt",
+        headers={"Content-Disposition": "attachment; filename=markdown-vault.crt"},
+    )
+
+
+@router.get(
+    "/obsidian-local-rest-api.crt",
+    response_class=FileResponse,
+    summary="Download SSL certificate (deprecated)",
+    description=(
+        "**DEPRECATED**: This endpoint is maintained for backward compatibility. "
+        "Please use `/server.crt` instead. "
+        "\n\n"
+        "Downloads the SSL certificate file for the server. "
+        "This certificate can be installed on clients to trust the "
+        "self-signed certificate used by the server. Requires authentication."
+    ),
+    tags=["system"],
+    deprecated=True,
+    responses={
+        200: {
+            "description": "SSL certificate file",
+            "content": {"application/x-pem-file": {}},
+        },
+        401: {"description": "Authentication required"},
+        404: {"description": "Certificate file not found"},
+        500: {"description": "Certificate path not configured"},
+    },
+)
+async def get_ssl_certificate_legacy(
+    api_key: ApiKeyDep,
+    config: ConfigDep,
+) -> FileResponse:
+    """
+    Download the SSL certificate file (legacy endpoint).
+
+    **DEPRECATED**: This endpoint is maintained for backward compatibility
+    with existing integrations that use the old Obsidian-branded path.
+    New integrations should use `/server.crt` instead.
+
+    Returns the SSL certificate file that can be installed on client
+    systems to trust the self-signed certificate. The certificate path
+    is read from the application configuration.
+
+    Args:
+        api_key: Validated API key (from dependency)
+        config: Application configuration
+
+    Returns:
+        SSL certificate file for download (with legacy filename)
+
+    Raises:
+        HTTPException: If certificate path is not configured (500)
+        HTTPException: If certificate file is not found (404)
+    """
+    # Get certificate path from config
+    cert_path_str = config.security.cert_path
+    if not cert_path_str:
+        logger.error("Certificate path not configured")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Certificate path not configured",
+        )
+
+    # Resolve certificate path
+    cert_path = Path(cert_path_str).expanduser().resolve()
+
+    # Check if certificate file exists
+    if not cert_path.exists():
+        logger.error(f"Certificate file not found: {cert_path}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Certificate file not found: {cert_path}",
+        )
+
+    if not cert_path.is_file():
+        logger.error(f"Certificate path is not a file: {cert_path}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Certificate path is not a file: {cert_path}",
+        )
+
+    # Return certificate file with legacy filename for backward compatibility
+    logger.info(f"Serving certificate file via legacy endpoint: {cert_path}")
     return FileResponse(
         path=cert_path,
         media_type="application/x-pem-file",
