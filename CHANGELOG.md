@@ -13,9 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configuration system design
 - Docker deployment support
 - Project planning and roadmap
+- Obsidian vault compatibility guide
 
 ### Changed
-- Nothing yet
+- Updated project positioning to white-label approach
+- Renamed MIGRATION_FROM_PLUGIN.md to OBSIDIAN_VAULT_COMPATIBILITY.md
+- Renamed config/obsidian-integration.example.yaml to config/obsidian-vault.example.yaml
+- Updated all documentation to use "compatible with" instead of "drop-in replacement"
+- Reframed "Obsidian Integration Mode" as "Obsidian Compatibility Mode"
+- Updated package keywords for better discoverability
 
 ### Deprecated
 - Nothing yet
@@ -28,6 +34,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 - Nothing yet
+
+## [0.2.0] - 2025-11-29
+
+### Changed
+- **BREAKING**: Rebranding to white-label positioning
+  - Project now emphasizes standalone nature with Obsidian compatibility as a feature
+  - All documentation updated to use neutral, professional language
+  - No code changes, only documentation and messaging updates
+  - API and functionality remain 100% compatible with previous versions
+
+### Added
+- OBSIDIAN_VAULT_COMPATIBILITY.md guide for using with Obsidian vaults
+- Comprehensive rebranding plan documentation (REBRANDING_PLAN.md)
+
+### Removed
+- Migration-focused documentation (replaced with compatibility guide)
 
 ## [0.1.0] - TBD
 
