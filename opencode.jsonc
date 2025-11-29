@@ -8,6 +8,15 @@
         "with-context-mcp"
       ],
       "environment": {
+        // CLIENT-SIDE environment variables (used by with-context-mcp MCP client)
+        // These are NOT server variables. The markdown-vault server uses MARKDOWN_VAULT_* variables.
+        
+        // Using OBSIDIAN_* for compatibility with existing Obsidian-based MCP clients
+        // For new integrations, you can use VAULT_* variables instead:
+        // "VAULT_API_KEY": "test-api-key-for-mcp-testing-12345",
+        // "VAULT_API_URL": "https://127.0.0.1:27125",
+        // "VAULT_NAME": "test_vault",
+        
         "OBSIDIAN_API_KEY": "test-api-key-for-mcp-testing-12345",
         "OBSIDIAN_API_URL": "https://127.0.0.1:27125",
         "OBSIDIAN_VAULT": "test_vault",

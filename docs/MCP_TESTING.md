@@ -31,10 +31,16 @@ source .env.test
 ```
 
 This sets:
-- `MARKDOWN_VAULT_API_KEY` - API key for authentication
-- `OBSIDIAN_API_URL` - Points to our server at https://127.0.0.1:27124
-- `OBSIDIAN_VAULT` - Vault name (test_vault)
-- Vault path, SSL settings, etc.
+- **Server variables** (used by markdown-vault server):
+  - `MARKDOWN_VAULT_API_KEY` - API key for authentication
+  - `MARKDOWN_VAULT_PATH` - Vault directory path
+  - `MARKDOWN_VAULT_PORT` - Server port
+- **Client variables** (used by MCP clients like with-context-mcp):
+  - `VAULT_API_URL` or `OBSIDIAN_API_URL` - Points to server (e.g., https://127.0.0.1:27124)
+  - `VAULT_API_KEY` or `OBSIDIAN_API_KEY` - API key for client authentication
+  - `VAULT_NAME` or `OBSIDIAN_VAULT` - Vault name (e.g., test_vault)
+
+**Note**: The `OBSIDIAN_*` client variables are for compatibility with existing MCP clients. New integrations should use `VAULT_*` variables.
 
 ### 3. Start markdown-vault Server
 
@@ -89,6 +95,8 @@ The `opencode.jsonc` file is already configured:
       "command": "npx",
       "args": ["-y", "with-context-mcp"],
       "environment": {
+        // Client-side variables (used by with-context-mcp)
+        // Using OBSIDIAN_* for backward compatibility with MCP client
         "OBSIDIAN_API_KEY": "{env:MARKDOWN_VAULT_API_KEY}",
         "OBSIDIAN_API_URL": "https://127.0.0.1:27124",
         "OBSIDIAN_VAULT": "test_vault",
@@ -98,6 +106,10 @@ The `opencode.jsonc` file is already configured:
     }
   }
 }
+
+// Note: For new integrations, you can use white-label variable names:
+// "VAULT_API_KEY", "VAULT_API_URL", "VAULT_NAME"
+// Both sets work with markdown-vault server.
 ```
 
 ### 2. Start OpenCode with MCP
