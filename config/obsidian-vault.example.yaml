@@ -1,15 +1,15 @@
-# markdown-vault Configuration as Drop-in Replacement for Obsidian Plugin
+# markdown-vault Configuration for Obsidian Vault Compatibility
 # 
-# Use this configuration to REPLACE the Obsidian Local REST API plugin
-# with markdown-vault pointing to your existing Obsidian vault.
+# Use this configuration to connect markdown-vault to your Obsidian vault
+# for API access to your notes and vault structure.
 #
-# Key Benefits:
+# Key Features:
 # - Works when Obsidian is closed
-# - More reliable than the plugin
+# - Dedicated API service for automation
 # - Can run on servers/containers
 # - Obsidian does NOT need to be running
 #
-# Note: This reads Obsidian's configuration but operates independently
+# Note: Reads Obsidian's configuration but operates independently
 
 server:
   host: "127.0.0.1"
@@ -32,8 +32,8 @@ vault:
   respect_gitignore: true
 
 security:
-  # Generate new API key for markdown-vault
-  # (You can use the same key as Obsidian plugin had, but not required)
+  # API key for authentication
+  # (Can match existing API key from other services, or generate new)
   api_key: null
   cert_path: "./certs/server.crt"
   key_path: "./certs/server.key"
@@ -52,9 +52,9 @@ obsidian:
   respect_exclusions: true
 
 periodic_notes:
-  # When config_sync is enabled, these settings will be
-  # imported from Obsidian's periodic notes plugin configuration
-  # Manual settings here will be used as fallbacks
+  # When config_sync is enabled, these settings are
+  # imported from Obsidian's periodic notes plugin configuration.
+  # Manual settings here are used as fallbacks.
   
   daily:
     enabled: true
