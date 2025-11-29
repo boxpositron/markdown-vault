@@ -1,7 +1,7 @@
 # markdown-vault: Implementation Plan
 
 **Project Name**: markdown-vault  
-**Description**: Drop-in replacement for Obsidian Local REST API plugin with standalone service capabilities  
+**Description**: Standalone REST API service for markdown vault management with Obsidian compatibility  
 **Status**: Phase 1 - In Progress (Foundation)  
 **Last Updated**: November 27, 2025
 
@@ -9,10 +9,10 @@
 
 Build a reliable, standalone REST API service for markdown vault management that:
 
-1. **Full Compatibility**: Drop-in replacement for Obsidian Local REST API plugin
+1. **Full Compatibility**: Compatible with Obsidian Local REST API specification
 2. **Dual Mode Operation**:
    - **Standalone Mode**: Independent markdown vault management
-   - **Obsidian Integration Mode**: Work alongside Obsidian vaults
+   - **Obsidian Compatibility Mode**: Works with Obsidian vault structures
 3. **Reliability**: No dependency on Obsidian being open
 4. **Performance**: Optimized for concurrent API operations
 5. **Extensibility**: Easy to add new features and integrations
@@ -25,10 +25,10 @@ Build a reliable, standalone REST API service for markdown vault management that
 - Ideal for automation, scripts, and non-Obsidian workflows
 - Can create and manage vault structure
 
-### Obsidian Integration Mode
+### Obsidian Compatibility Mode
 - Points to existing Obsidian vault directory
 - Respects `.obsidian/` configuration
-- Compatible with Obsidian plugin simultaneously (with proper locking)
+- Can work alongside Obsidian (with proper file handling)
 - Reads Obsidian plugin settings for periodic notes, templates, etc.
 - Optional: Sync active file state with Obsidian
 
@@ -144,7 +144,7 @@ markdown-vault/
 │
 ├── config/
 │   ├── config.example.yaml              # Example configuration
-│   └── obsidian-integration.example.yaml # Obsidian integration example
+│   └── obsidian-vault.example.yaml      # Obsidian vault compatibility example
 │
 ├── scripts/
 │   ├── generate_cert.py                 # SSL cert generation script

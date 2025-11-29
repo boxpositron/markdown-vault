@@ -6,18 +6,18 @@
 
 ## What is markdown-vault?
 
-**markdown-vault** is a standalone REST API service that replaces the Obsidian Local REST API plugin. It provides full programmatic access to markdown vaults without requiring Obsidian to be installed or running.
+**markdown-vault** is a standalone REST API service for programmatic access to markdown vaults. It provides a comprehensive HTTP API for managing markdown files, with optional compatibility for Obsidian vault structures.
 
 ### Key Value Propositions
 
-1. **Drop-in Replacement**: 100% API-compatible with Obsidian Local REST API plugin
+1. **Obsidian API Compatibility**: 100% compatible with the Obsidian Local REST API specification
 2. **Dual-Mode Operation**:
    - **Standalone Mode**: Manage any markdown vault - no Obsidian needed
-   - **Replacement Mode**: Point at an Obsidian vault to replace the plugin entirely
+   - **Obsidian Compatibility Mode**: Works with Obsidian vault structures and configuration
 3. **True Independence**: Works without Obsidian being installed or running
 4. **Deployment Flexibility**: Docker, systemd, or standalone binary
 5. **Extensibility**: Plugin system and custom commands
-6. **Always Available**: Service runs 24/7, unlike plugin that requires Obsidian to be open
+6. **Always Available**: Service runs 24/7 as a dedicated API server
 
 ## Documentation Overview
 
@@ -49,7 +49,7 @@
    - Security options
    - Feature toggles
 
-2. **[obsidian-integration.example.yaml](../config/obsidian-integration.example.yaml)** - Obsidian-specific setup
+2. **[obsidian-vault.example.yaml](../config/obsidian-vault.example.yaml)** - Obsidian vault compatibility
    - Vault path configuration
    - Config sync settings
    - Periodic notes integration
@@ -217,7 +217,7 @@ obsidian:
 
 **Key Point**: Obsidian is **not required** - this is a completely independent service.
 
-### Mode 2: Drop-in Replacement for Obsidian Plugin
+### Mode 2: Obsidian Vault Compatibility
 ```yaml
 vault:
   path: "/Users/me/ObsidianVault"
@@ -229,13 +229,13 @@ obsidian:
 ```
 
 **Use Cases**:
-- Replace Obsidian Local REST API plugin
+- API access compatible with Obsidian Local REST API clients
 - API access when Obsidian is closed
 - Server/container deployment with Obsidian vaults
-- More reliable API service than plugin
+- Dedicated API service for vault automation
 - Remote access to Obsidian vault
 
-**Key Point**: Replaces the plugin - Obsidian **does not need to be running**. The service reads Obsidian's configuration files but operates independently.
+**Key Point**: Works with Obsidian vaults - Obsidian **does not need to be running**. The service reads Obsidian's configuration files but operates independently.
 
 ## Deployment Options
 
