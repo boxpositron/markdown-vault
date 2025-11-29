@@ -232,12 +232,13 @@ def create_app(config: AppConfig) -> FastAPI:
     app.add_exception_handler(Exception, generic_error_handler)
 
     # Register API routers
-    from markdown_vault.api.routes import active, periodic, system, vault
+    from markdown_vault.api.routes import active, periodic, search, system, vault
 
     app.include_router(system.router, tags=["system"])
     app.include_router(vault.router, tags=["vault"])
     app.include_router(active.router, tags=["active"])
     app.include_router(periodic.router, tags=["periodic"])
+    app.include_router(search.router, tags=["search"])
 
     # Add health check endpoint
     @app.get("/health", tags=["system"])
