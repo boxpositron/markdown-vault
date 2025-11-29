@@ -1,6 +1,8 @@
 # Contributing to markdown-vault
 
-Thank you for your interest in contributing to markdown-vault! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to markdown-vault! 
+
+**markdown-vault** is a standalone REST API service for programmatic access to markdown vaults, with optional compatibility for Obsidian vault structures. This document provides guidelines and instructions for contributing.
 
 ## Getting Started
 

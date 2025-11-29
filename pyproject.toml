@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "markdown-vault"
 version = "0.1.0"
-description = "Drop-in replacement for Obsidian Local REST API with standalone service capabilities"
+description = "Standalone REST API service for markdown vault management with Obsidian compatibility"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
     {name = "Your Name", email = "your.email@example.com"}
 ]
-keywords = ["markdown", "obsidian", "api", "rest", "vault", "notes"]
+keywords = ["markdown", "vault-api", "markdown-server", "rest-api", "notes", "obsidian-compatible"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
