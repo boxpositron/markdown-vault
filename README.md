@@ -1,51 +1,51 @@
 # markdown-vault
 
-A drop-in replacement for the Obsidian Local REST API plugin that can run as a standalone service. Interact with your markdown vaults programmatically with a secure, reliable REST API - whether or not Obsidian is running.
+A REST API server for markdown vaults with comprehensive vault management, search, and automation capabilities. Built for CI/CD pipelines, cloud deployments, and programmatic markdown workflows with optional Obsidian compatibility.
 
 ## Overview
 
-**markdown-vault** is a standalone service that provides a REST API for managing markdown files with full compatibility with the [Obsidian Local REST API plugin](https://github.com/coddingtonbear/obsidian-local-rest-api). It operates in two modes:
+**markdown-vault** is a standalone HTTP service that provides a secure REST API for managing markdown files and vaults. Whether you're building automation tools, integrating markdown into your CI/CD pipeline, or need programmatic access to your notes, markdown-vault provides a robust, production-ready solution.
 
-1. **Standalone Mode**: Manage any markdown vault independently - no Obsidian required
-2. **Drop-in Replacement Mode**: Point it at an Obsidian vault to replace the Obsidian REST API plugin with a more reliable service
+**What it is**: An independent REST API server for markdown vault operations
+**What it's not**: Not an Obsidian plugin - runs as a standalone service with optional Obsidian vault support
 
-**Key Distinction**: This is not an Obsidian plugin - it's a standalone service that can work with or without Obsidian.
+### Operating Modes
+
+1. **Standalone Mode**: Manage any markdown vault independently with full API control
+2. **Obsidian Compatibility Mode**: Point it at an Obsidian vault for API-compatible access to existing vaults
 
 ## Key Features
 
-- Full Obsidian REST API compatibility - drop-in replacement
-- CRUD operations on markdown files
-- Advanced PATCH operations (heading/block/frontmatter targeting)
-- Periodic notes support (daily, weekly, monthly, quarterly, yearly)
-- Search functionality with JSONLogic queries
-- Vault-wide file listing and management
-- Secure HTTPS with API key authentication
-- No dependency on Obsidian being open
-- Docker and standalone deployment options
+### Core Capabilities
+- **Full CRUD Operations**: Create, read, update, and delete markdown files via REST API
+- **Advanced PATCH Operations**: Targeted updates with heading, block reference, and frontmatter selectors
+- **Periodic Notes**: Built-in support for daily, weekly, monthly, quarterly, and yearly notes
+- **Search Engine**: Simple text search and complex JSONLogic-based queries
+- **Vault Management**: File listing, metadata access, and vault-wide operations
 
-## Why Replace the Obsidian Plugin?
+### Production Ready
+- **Secure by Default**: HTTPS with API key authentication
+- **Always Available**: 24/7 service independent of desktop applications
+- **Docker Support**: Container images for easy deployment
+- **Cloud Native**: Deploy to any server, container platform, or cloud provider
+- **High Performance**: Dedicated service optimized for API operations
+- **Concurrent Access**: Manage multiple vaults simultaneously
 
-| Feature | Obsidian Plugin | markdown-vault |
-|---------|----------------|----------------|
-| **Requires Obsidian** | ✅ Yes - must be running | ❌ No - fully standalone |
-| **Always Available** | ❌ Only when Obsidian is open | ✅ 24/7 service |
-| **Server Deployment** | ❌ Desktop only | ✅ Servers, containers, cloud |
-| **Performance** | Limited by Obsidian | Dedicated, optimized service |
-| **Multiple Vaults** | One at a time | Concurrent access |
-| **Automation** | Requires Obsidian running | Independent automation |
-| **API Compatibility** | ✅ Original | ✅ 100% compatible |
+### Extensibility
+- **Clean API Design**: RESTful endpoints with comprehensive OpenAPI documentation
+- **Flexible Configuration**: YAML-based configuration with environment variable support
+- **Format Support**: JSON and Markdown response formats
+- **Webhook Ready**: Architecture designed for easy feature additions
 
-**Key Difference**: The Obsidian plugin requires Obsidian to be running. **markdown-vault is a standalone service** that works with or without Obsidian installed.
+## Use Cases
 
-## Advantages Over Plugin
-
-- **True Independence**: No dependency on Obsidian being installed or running
-- **Always Available**: 24/7 API access, even when Obsidian is closed
-- **Server Deployment**: Run on servers, containers, cloud platforms
-- **Better Performance**: Dedicated service optimized for API operations
-- **Easier Automation**: No need to keep Obsidian open for scripts/integrations
-- **Multiple Vaults**: Can manage multiple vaults concurrently
-- **Extensibility**: Easy to add features like webhooks, sync, etc.
+- **CI/CD Integration**: Automate documentation updates in your build pipeline
+- **Cloud Automation**: Run as a microservice for markdown-based workflows
+- **Script Integration**: Programmatic note creation and updates from any language
+- **Content Management**: Headless CMS for markdown-based content
+- **Knowledge Base API**: REST API for documentation and wiki systems
+- **Development Tools**: Backend for markdown editor integrations
+- **Obsidian Automation**: API access to Obsidian vaults without desktop dependency
 
 ## Quick Start
 
@@ -197,9 +197,11 @@ Returns:
 }
 ```
 
-## Using with Obsidian Vaults
+## Working with Obsidian Vaults
 
-You can use markdown-vault as a **drop-in replacement** for the Obsidian Local REST API plugin:
+markdown-vault provides **full API compatibility** with the Obsidian Local REST API plugin, making it easy to work with existing Obsidian vaults or integrate with Obsidian-aware tools.
+
+### Configuration for Obsidian Vaults
 
 1. **Point to your Obsidian vault**:
    ```yaml
@@ -207,25 +209,57 @@ You can use markdown-vault as a **drop-in replacement** for the Obsidian Local R
      path: "/Users/you/Documents/MyObsidianVault"
    ```
 
-2. **Configure to respect Obsidian structure**:
+2. **Enable Obsidian integration features**:
    ```yaml
    obsidian:
      enabled: true              # Respect .obsidian/ directory
      config_sync: true          # Read periodic notes settings from Obsidian
    ```
 
-3. **Replace the Obsidian plugin**:
-   - Disable the Obsidian Local REST API plugin
-   - Use markdown-vault's API at the same port (27123)
-   - All existing clients work without changes
+3. **Use the API**:
+   - API runs on port 27123 (same as Obsidian Local REST API plugin)
+   - All endpoints are API-compatible with existing clients
+   - Works whether or not Obsidian is running
 
-4. **Benefits of replacement**:
-   - Works even when Obsidian is closed
-   - Better performance and reliability
-   - Can run on servers/containers
-   - Easier to automate and integrate
+### Advantages for Obsidian Users
 
-**Migrating from the plugin?** See our [Migration Guide](./docs/MIGRATION_FROM_PLUGIN.md) for step-by-step instructions.
+- **Continuous Availability**: Access your vault via API even when Obsidian is closed
+- **Server Deployment**: Run on servers for remote access to your Obsidian vault
+- **Automation**: Build scripts and integrations without desktop dependency
+- **Performance**: Dedicated service optimized for API operations
+- **Multiple Vaults**: Access multiple Obsidian vaults concurrently
+
+**Migrating from the Obsidian plugin?** See our [Migration Guide](./docs/MIGRATION_FROM_PLUGIN.md) for step-by-step instructions.
+
+## Deployment Options
+
+### Docker Deployment
+```bash
+docker run -d \
+  -p 27123:27123 \
+  -v /path/to/vault:/vault \
+  -e VAULT_PATH=/vault \
+  -e API_KEY=your-key \
+  markdown-vault:latest
+```
+
+### Docker Compose
+```yaml
+version: '3.8'
+services:
+  markdown-vault:
+    image: markdown-vault:latest
+    ports:
+      - "27123:27123"
+    volumes:
+      - ./vault:/vault
+      - ./config.yaml:/app/config.yaml
+    environment:
+      - CONFIG_PATH=/app/config.yaml
+```
+
+### Systemd Service
+See [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for production deployment guides.
 
 ## Project Status
 
@@ -233,22 +267,25 @@ This project is currently in active development. See [PLAN.md](./PLAN.md) for th
 
 ## Documentation
 
-- [Migration Guide](./docs/MIGRATION_FROM_PLUGIN.md) - Replace Obsidian plugin with markdown-vault
+- [Configuration Guide](./docs/CONFIGURATION.md) - Complete configuration reference
+- [Migration Guide](./docs/MIGRATION_FROM_PLUGIN.md) - Moving from Obsidian Local REST API plugin
 - [Implementation Plan](./docs/PLAN.md) - Detailed development roadmap
-- [Research Notes](./docs/RESEARCH.md) - Original API analysis
 - [Project Summary](./docs/PROJECT_SUMMARY.md) - Executive overview
 - [Documentation Setup](./docs/DOCUMENTATION_SETUP.md) - Documentation architecture
-- [Configuration Guide](./docs/CONFIGURATION.md) - (Coming soon)
 - [API Reference](./docs/API.md) - (Coming soon)
 
 ## Contributing
 
-Contributions welcome! This is an open-source project aimed at improving markdown vault automation.
+Contributions welcome! This is an open-source project aimed at improving markdown vault automation and programmatic access.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## License
 
 MIT License - See [LICENSE](./LICENSE) for details
 
-## Credits
+## Credits and Acknowledgments
 
-Inspired by and compatible with [obsidian-local-rest-api](https://github.com/coddingtonbear/obsidian-local-rest-api) by [@coddingtonbear](https://github.com/coddingtonbear).
+This project implements API compatibility with the [Obsidian Local REST API plugin](https://github.com/coddingtonbear/obsidian-local-rest-api) created by [@coddingtonbear](https://github.com/coddingtonbear). The plugin's excellent API design served as the foundation for this standalone implementation.
+
+[Obsidian](https://obsidian.md) is a trademark of Dynalist Inc. This project is an independent implementation and is not affiliated with, endorsed by, or sponsored by Obsidian or Dynalist Inc.
