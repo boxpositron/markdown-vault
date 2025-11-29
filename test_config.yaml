@@ -1,6 +1,6 @@
 server:
   host: "127.0.0.1"
-  port: 27124
+  port: 27125
   https: true
   reload: false
 
