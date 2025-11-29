@@ -10,14 +10,21 @@ This module provides all vault-level endpoints:
 """
 
 import logging
-from typing import List, Union
 
 from fastapi import APIRouter, Header, HTTPException, Request, Response, status
 from fastapi.responses import PlainTextResponse
 
 from markdown_vault.api.deps import ApiKeyDep, VaultPathDep
+from markdown_vault.core.patch_engine import (
+    InvalidTargetError,
+    PatchEngine,
+    PatchError,
+    TargetNotFoundError,
+)
 from markdown_vault.core.vault import (
     FileNotFoundError as VaultFileNotFoundError,
+)
+from markdown_vault.core.vault import (
     InvalidPathError,
     VaultManager,
 )
@@ -34,7 +41,7 @@ CONTENT_TYPE_JSON = "application/vnd.olrapi.note+json"
 
 @router.get(
     "/vault/",
-    response_model=List[str],
+    response_model=list[str],
     summary="List all files",
     description="Returns a list of all markdown files in the vault.",
     tags=["vault"],
@@ -42,7 +49,7 @@ CONTENT_TYPE_JSON = "application/vnd.olrapi.note+json"
 async def list_vault_files(
     api_key: ApiKeyDep,
     vault_path: VaultPathDep,
-) -> List[str]:
+) -> list[str]:
     """
     List all markdown files in the vault.
 
@@ -88,7 +95,7 @@ async def read_vault_file(
     api_key: ApiKeyDep,
     vault_path: VaultPathDep,
     accept: str = Header(default=CONTENT_TYPE_MARKDOWN),
-) -> Union[PlainTextResponse, NoteJson]:
+) -> PlainTextResponse | NoteJson:
     """
     Read a markdown file from the vault.
 
@@ -315,6 +322,133 @@ async def delete_file(
         logger.warning(f"File not found: {filepath}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except InvalidPathError as e:
+        logger.warning(f"Invalid path: {filepath}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+
+@router.patch(
+    "/vault/{filepath:path}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Partially update file",
+    description=(
+        "Apply a partial update to a markdown file using targeted operations. "
+        "Supports heading-based targeting, block references, and frontmatter updates."
+    ),
+    tags=["vault"],
+    responses={
+        204: {"description": "File updated successfully"},
+        404: {"description": "File or target not found"},
+        400: {"description": "Invalid operation or target"},
+    },
+)
+async def patch_file(
+    filepath: str,
+    request: Request,
+    api_key: ApiKeyDep,
+    vault_path: VaultPathDep,
+    operation: str = Header(..., description="Operation: append, prepend, or replace"),
+    target_type: str = Header(
+        ...,
+        alias="Target-Type",
+        description="Target type: heading, block, or frontmatter",
+    ),
+    target: str = Header(..., description="Target specifier"),
+    create_target_if_missing: bool = Header(
+        default=False,
+        alias="Create-Target-If-Missing",
+        description="Create target if it doesn't exist (headings only)",
+    ),
+) -> Response:
+    """
+    Apply a partial update to a markdown file.
+
+    Uses custom headers to specify the operation:
+    - Operation: append, prepend, or replace
+    - Target-Type: heading, block, or frontmatter
+    - Target: Target specifier (format depends on Target-Type)
+    - Create-Target-If-Missing: Create heading if not found (optional)
+
+    Target formats:
+    - heading: "Heading::Subheading:N" (:: separates hierarchy, :N is 1-based index)
+    - block: "blockid" (without ^ prefix)
+    - frontmatter: "field_name"
+
+    Args:
+        filepath: Path to file relative to vault root
+        request: HTTP request with body content
+        api_key: Validated API key (from dependency)
+        vault_path: Vault root path (from dependency)
+        operation: Operation to perform
+        target_type: Type of target
+        target: Target specifier
+        create_target_if_missing: Whether to create target if missing
+
+    Returns:
+        204 No Content on success
+
+    Raises:
+        HTTPException: 404 if file or target not found
+        HTTPException: 400 if operation or target is invalid
+    """
+    vault = VaultManager(vault_path)
+    engine = PatchEngine()
+
+    # Read request body
+    content = await request.body()
+    new_content = content.decode("utf-8")
+
+    try:
+        # Read the file
+        note = await vault.read_file(filepath)
+
+        # Rebuild full content with frontmatter
+        if note.frontmatter:
+            import frontmatter as fm
+
+            post = fm.Post(note.content, **note.frontmatter)
+            original_content = fm.dumps(post)
+        else:
+            original_content = note.content
+
+        # Apply patch
+        updated_content = engine.apply_patch(
+            content=original_content,
+            operation=operation.lower(),
+            target_type=target_type.lower(),
+            target=target,
+            new_content=new_content,
+            create_if_missing=create_target_if_missing,
+        )
+
+        # Write back to file
+        await vault.write_file(filepath, updated_content)
+        logger.info(
+            f"Patched file: {filepath} (op={operation}, type={target_type}, target={target})"
+        )
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    except VaultFileNotFoundError as e:
+        logger.warning(f"File not found: {filepath}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except TargetNotFoundError as e:
+        logger.warning(f"Target not found in {filepath}: {target}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except (InvalidTargetError, PatchError) as e:
+        logger.warning(f"Invalid patch operation on {filepath}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e),
         )
     except InvalidPathError as e:
