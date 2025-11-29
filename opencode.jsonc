@@ -1,19 +1,20 @@
 {
-  // OpenCode MCP Configuration for markdown-vault
-  // This configures with-context-mcp to test our REST API server
   "mcp": {
     "with-context": {
       "type": "local",
-      "command": "npx",
-      "args": ["-y", "with-context-mcp"],
+      "command": [
+        "npx",
+        "-y",
+        "with-context-mcp"
+      ],
       "environment": {
-        // Point to our markdown-vault server instead of Obsidian
-        "OBSIDIAN_API_KEY": "{env:MARKDOWN_VAULT_API_KEY}",
+        "OBSIDIAN_API_KEY": "test-api-key-for-mcp-testing-12345",
         "OBSIDIAN_API_URL": "https://127.0.0.1:27125",
         "OBSIDIAN_VAULT": "test_vault",
         "PROJECT_BASE_PATH": "."
       },
       "enabled": true
     }
-  }
+  },
+  "$schema": "https://opencode.ai/config.json"
 }
