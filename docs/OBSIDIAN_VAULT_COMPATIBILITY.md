@@ -1,24 +1,24 @@
-# Migrating from Obsidian Local REST API Plugin
+# Using markdown-vault with Obsidian Vaults
 
-**Goal**: Replace the Obsidian Local REST API plugin with markdown-vault for more reliable, always-available API access.
+**Goal**: Use markdown-vault to provide API access to your Obsidian vault, with or without Obsidian running.
 
-## Why Migrate?
+## Overview
 
-The Obsidian Local REST API plugin requires Obsidian to be running. **markdown-vault is a standalone service** that provides the same API without requiring Obsidian.
+markdown-vault is a standalone REST API service that can work with Obsidian vault structures. It provides an HTTP API compatible with the Obsidian Local REST API specification, enabling programmatic access to your vault.
 
-### Benefits of Migration
+### Key Features
 
-| Obsidian Plugin | markdown-vault |
-|----------------|----------------|
-| ✅ Works only when Obsidian is open | ✅ Always available (24/7) |
-| ✅ Desktop only | ✅ Can run on servers, containers |
-| ✅ One vault at a time | ✅ Multiple vaults supported |
-| ✅ Tied to Obsidian performance | ✅ Dedicated, optimized service |
-| ✅ Requires Obsidian installation | ✅ Works standalone |
+| Feature | Description |
+|---------|-------------|
+| 🔌 **Standalone Operation** | Works without Obsidian running |
+| 🏢 **Server Deployment** | Run on servers, containers, or desktop |
+| 📁 **Vault Compatibility** | Reads `.obsidian/` configuration |
+| ⚙️ **Config Sync** | Imports periodic notes and template settings |
+| 🔄 **Independent** | No Obsidian installation required |
 
-**After migration**: Your existing API clients continue to work without changes!
+**Compatible with existing API clients** that use the Obsidian Local REST API format.
 
-## Migration Steps
+## Setup Guide
 
 ### Step 1: Install markdown-vault
 
@@ -77,14 +77,18 @@ security:
 
 **Note**: You don't have to use the same key - markdown-vault can generate a new one.
 
-### Step 4: Disable Obsidian Plugin
+### Step 4: Configure Port Usage
 
-**Important**: Stop the Obsidian plugin before starting markdown-vault (both use port 27123).
+**Important**: If using the Obsidian Local REST API plugin simultaneously, use different ports.
 
-1. Open Obsidian
-2. Go to Settings → Community Plugins
-3. Toggle off "Local REST API"
-4. (Optional) You can now close Obsidian - markdown-vault doesn't need it!
+**Option 1** - Use markdown-vault alone:
+1. Disable the Obsidian plugin (if installed)
+2. markdown-vault uses port 27123
+
+**Option 2** - Run both services:
+1. Change markdown-vault to port 27124 in `config.yaml`
+2. Keep Obsidian plugin on port 27123
+3. Point clients to the appropriate service
 
 ### Step 5: Start markdown-vault
 
@@ -97,11 +101,11 @@ docker-compose up -d
 ```
 
 The service will:
-- Start on the same port (27123)
+- Start on port 27123 (default)
 - Use HTTPS (self-signed cert or existing cert)
 - Read your Obsidian vault structure
 - Import periodic notes settings from `.obsidian/`
-- Work exactly like the plugin
+- Provide API access compatible with Obsidian Local REST API
 
 ### Step 6: Test the API
 
@@ -170,7 +174,7 @@ markdown-vault will automatically read these settings when `obsidian.config_sync
 
 If you use templates, ensure they're in your vault and referenced correctly.
 
-## Running Both (Advanced)
+## Running Alongside Obsidian Plugin (Advanced)
 
 You can run both the plugin and markdown-vault, but they **cannot use the same port**.
 
@@ -182,7 +186,7 @@ server:
 
 **Option 2**: Change Obsidian plugin port (in Obsidian settings)
 
-**Recommended**: Just use markdown-vault - it's more reliable and doesn't require Obsidian to run.
+**Use Case**: Test compatibility or transition between services gradually.
 
 ## Docker Deployment
 
@@ -247,13 +251,14 @@ sudo systemctl status markdown-vault
 
 **Error**: `Address already in use: 27123`
 
-**Solution**: Ensure Obsidian plugin is disabled:
+**Solution**: Check what's using the port:
 ```bash
 # Check what's using the port
 lsof -i :27123
 
-# Kill the process if needed
-kill -9 <PID>
+# Options:
+# 1. Stop the other service
+# 2. Use a different port in config.yaml
 ```
 
 ### Certificate Issues
@@ -311,9 +316,9 @@ periodic_notes:
     template: "Templates/Daily.md"
 ```
 
-## Reverting to Plugin
+## Switching Between Services
 
-If you need to go back to the Obsidian plugin:
+To switch from markdown-vault to another API service:
 
 1. Stop markdown-vault:
    ```bash
@@ -327,12 +332,11 @@ If you need to go back to the Obsidian plugin:
    docker-compose down
    ```
 
-2. Re-enable Obsidian plugin:
-   - Open Obsidian
-   - Settings → Community Plugins → Local REST API
-   - Toggle on
+2. Configure your alternative service (e.g., Obsidian plugin)
+   - Ensure port configuration matches
+   - Update API keys in clients if changed
 
-3. Update your applications to use the original API key (if you changed it)
+3. Test connectivity to the new service
 
 ## FAQ
 
@@ -352,9 +356,9 @@ If you need to go back to the Obsidian plugin:
 
 **A**: markdown-vault maintains its own active file state. It doesn't sync with Obsidian's currently open file. Use `/open/{filename}` to set the active file.
 
-### Q: Do I need to migrate my API keys to all clients?
+### Q: Do I need to update API keys in all clients?
 
-**A**: Only if you generated a new key. If you copied your Obsidian plugin key to markdown-vault, clients continue to work without changes.
+**A**: Only if you use a different API key than before. If you use the same key, clients work without changes.
 
 ### Q: Can markdown-vault handle multiple vaults?
 
@@ -369,14 +373,14 @@ If you need to go back to the Obsidian plugin:
 
 ## Next Steps
 
-After migration:
+After setup:
 
-1. ✅ Close Obsidian (if you want) - API still works!
+1. ✅ Test API endpoints with your applications
 2. ✅ Set up automated backups of your vault
-3. ✅ Configure markdown-vault as a system service (systemd/Docker)
+3. ✅ Configure markdown-vault as a system service (systemd/Docker) for always-on access
 4. ✅ Set up remote access (if needed) with proper security
-5. ✅ Explore new automation possibilities without Obsidian running
+5. ✅ Explore automation possibilities with the API
 
 ---
 
-**Welcome to always-on vault access!** 🎉
+**Enjoy programmatic vault access!**
