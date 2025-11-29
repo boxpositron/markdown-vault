@@ -2,11 +2,14 @@
 Unit tests for VaultManager.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from markdown_vault.core.vault import (
     FileNotFoundError as VaultFileNotFoundError,
+)
+from markdown_vault.core.vault import (
     InvalidPathError,
     VaultManager,
 )
@@ -376,6 +379,22 @@ class TestVaultManagerListFiles:
         assert any("nested-note.md" in f for f in files)
 
     @pytest.mark.asyncio
+    async def test_list_files_recursive_false(
+        self, vault_manager: VaultManager
+    ) -> None:
+        """Test listing files non-recursively."""
+        # Create nested structure
+        await vault_manager.write_file("dir/file1.md", "Content 1")
+        await vault_manager.write_file("dir/subdir/file2.md", "Content 2")
+
+        # List non-recursively
+        files = await vault_manager.list_files("dir", recursive=False)
+
+        # Should only include immediate children
+        assert any("dir/file1.md" in f for f in files)
+        assert not any("dir/subdir/file2.md" in f for f in files)
+
+    @pytest.mark.asyncio
     async def test_list_nonexistent_directory_returns_empty(
         self, vault_manager: VaultManager
     ) -> None:
@@ -390,3 +409,138 @@ class TestVaultManagerListFiles:
         """Test that listing file path raises error."""
         with pytest.raises(InvalidPathError, match="not a directory"):
             await vault_manager.list_files("simple.md")
+
+
+class TestVaultManagerConvenienceMethods:
+    """Test convenience methods for common operations."""
+
+    @pytest.mark.asyncio
+    async def test_file_exists_returns_true(self, vault_manager: VaultManager) -> None:
+        """Test file_exists returns True for existing file."""
+        exists = await vault_manager.file_exists("simple.md")
+        assert exists is True
+
+    @pytest.mark.asyncio
+    async def test_file_exists_returns_false(self, vault_manager: VaultManager) -> None:
+        """Test file_exists returns False for nonexistent file."""
+        exists = await vault_manager.file_exists("nonexistent.md")
+        assert exists is False
+
+    @pytest.mark.asyncio
+    async def test_file_exists_with_directory_returns_false(
+        self, vault_manager: VaultManager
+    ) -> None:
+        """Test file_exists returns False for directory."""
+        # Create a directory
+        await vault_manager.ensure_directory("testdir")
+        exists = await vault_manager.file_exists("testdir")
+        assert exists is False
+
+    @pytest.mark.asyncio
+    async def test_get_file_metadata_dict(self, vault_manager: VaultManager) -> None:
+        """Test get_file_metadata returns dictionary."""
+        metadata = await vault_manager.get_file_metadata("simple.md")
+        assert isinstance(metadata, dict)
+        assert "ctime" in metadata
+        assert "mtime" in metadata
+        assert "size" in metadata
+        assert metadata["ctime"] > 0
+        assert metadata["mtime"] > 0
+        assert metadata["size"] > 0
+
+    @pytest.mark.asyncio
+    async def test_ensure_directory_creates_dir(
+        self, vault_manager: VaultManager
+    ) -> None:
+        """Test ensure_directory creates directory."""
+        await vault_manager.ensure_directory("new/nested/dir")
+
+        # Verify directory was created
+        full_path = vault_manager.vault_path / "new/nested/dir"
+        assert full_path.exists()
+        assert full_path.is_dir()
+
+    @pytest.mark.asyncio
+    async def test_ensure_directory_idempotent(
+        self, vault_manager: VaultManager
+    ) -> None:
+        """Test ensure_directory can be called multiple times."""
+        await vault_manager.ensure_directory("testdir")
+        await vault_manager.ensure_directory("testdir")  # Should not raise
+
+        full_path = vault_manager.vault_path / "testdir"
+        assert full_path.exists()
+
+    def test_resolve_path_returns_absolute(self, vault_manager: VaultManager) -> None:
+        """Test resolve_path returns absolute path."""
+        path = vault_manager.resolve_path("test.md")
+        assert path.is_absolute()
+        assert path.name == "test.md"
+
+    def test_validate_path_accepts_valid(self, vault_manager: VaultManager) -> None:
+        """Test validate_path accepts valid path."""
+        # Should not raise
+        vault_manager.validate_path("test.md")
+        vault_manager.validate_path("nested/dir/test.md")
+
+    def test_validate_path_rejects_traversal(self, vault_manager: VaultManager) -> None:
+        """Test validate_path rejects path traversal."""
+        with pytest.raises(InvalidPathError):
+            vault_manager.validate_path("../../../etc/passwd")
+
+    def test_is_markdown_file_returns_true(self, vault_manager: VaultManager) -> None:
+        """Test is_markdown_file returns True for .md files."""
+        assert vault_manager.is_markdown_file("test.md") is True
+        assert vault_manager.is_markdown_file("path/to/note.md") is True
+
+    def test_is_markdown_file_returns_false(self, vault_manager: VaultManager) -> None:
+        """Test is_markdown_file returns False for non-.md files."""
+        assert vault_manager.is_markdown_file("test.txt") is False
+        assert vault_manager.is_markdown_file("test") is False
+        assert vault_manager.is_markdown_file("test.markdown") is False
+
+    def test_parse_frontmatter_with_yaml(self, vault_manager: VaultManager) -> None:
+        """Test parse_frontmatter extracts YAML."""
+        content = """---
+title: Test Note
+tags: [tag1, tag2]
+---
+
+# Note Content
+
+This is the body."""
+
+        fm, body = vault_manager.parse_frontmatter(content)
+        assert fm["title"] == "Test Note"
+        assert "tag1" in fm["tags"]
+        assert "# Note Content" in body
+        assert "---" not in body
+
+    def test_parse_frontmatter_without_yaml(self, vault_manager: VaultManager) -> None:
+        """Test parse_frontmatter handles content without frontmatter."""
+        content = "# Simple Note\n\nNo frontmatter here."
+
+        fm, body = vault_manager.parse_frontmatter(content)
+        assert fm == {}
+        assert body == content
+
+    def test_extract_tags_from_content(self, vault_manager: VaultManager) -> None:
+        """Test extract_tags finds inline tags."""
+        content = "# Note\n\nContent with #tag1 and #tag2."
+        tags = vault_manager.extract_tags(content)
+        assert "#tag1" in tags
+        assert "#tag2" in tags
+
+    def test_extract_tags_with_nested(self, vault_manager: VaultManager) -> None:
+        """Test extract_tags handles nested tags."""
+        content = "Tags: #category/subcategory #other"
+        tags = vault_manager.extract_tags(content)
+        assert "#category/subcategory" in tags
+        assert "#other" in tags
+
+    def test_extract_tags_deduplicates(self, vault_manager: VaultManager) -> None:
+        """Test extract_tags removes duplicates."""
+        content = "#tag #tag #tag #other"
+        tags = vault_manager.extract_tags(content)
+        assert tags.count("#tag") == 1
+        assert tags.count("#other") == 1
