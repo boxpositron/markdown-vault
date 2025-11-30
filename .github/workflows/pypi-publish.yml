@@ -59,6 +59,7 @@ jobs:
     name: Publish to TestPyPI
     needs: [build]
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'  # Only run on manual trigger
     
     environment:
       name: testpypi
@@ -78,3 +79,4 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+        continue-on-error: true  # Don't fail if TestPyPI publisher not configured

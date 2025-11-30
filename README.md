@@ -2,8 +2,10 @@
 
 A production-ready REST API server for markdown vault management with comprehensive search, automation, and optional Obsidian compatibility. Built for CI/CD pipelines, cloud deployments, and programmatic markdown workflows.
 
+[![PyPI version](https://img.shields.io/pypi/v/markdown-vault.svg)](https://pypi.org/project/markdown-vault/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docker](https://img.shields.io/badge/docker-ghcr.io-blue)](https://github.com/boxpositron/markdown-vault/pkgs/container/markdown-vault)
 
 ## Overview
 
@@ -585,4 +587,5 @@ API compatibility with [Obsidian Local REST API](https://github.com/coddingtonbe
 
 - **Repository**: https://github.com/boxpositron/markdown-vault
 - **Issues**: https://github.com/boxpositron/markdown-vault/issues
-- **PyPI**: https://pypi.org/project/markdown-vault/ (when published)
+- **PyPI**: https://pypi.org/project/markdown-vault/
+- **Docker**: https://github.com/boxpositron/markdown-vault/pkgs/container/markdown-vault
