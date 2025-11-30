@@ -1,58 +1,61 @@
-# Changelog
+## [1.0.0] - 2025-11-29
 
-All notable changes to this project will be documented in this file.
+### 🎉 Initial Release
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+**markdown-vault v1.0.0** - Production-ready REST API server for markdown vaults with Obsidian compatibility.
 
-## [Unreleased]
+### Features
 
-### Added
-- Initial project structure
-- Documentation (README, PLAN, RESEARCH)
-- Configuration system design
-- Docker deployment support
-- Project planning and roadmap
-- Obsidian vault compatibility guide
+#### Core API (29/29 Endpoints)
+- **System Endpoints** (3): Server status, OpenAPI spec, SSL certificate
+- **Vault Operations** (6): Full CRUD operations on markdown files
+- **Active File Tracking** (6): Session-based file management
+- **Periodic Notes** (10): Daily, weekly, monthly, quarterly, yearly notes
+- **Search** (2): Simple text search and JSONLogic queries
+- **Commands** (2): Extensible command system
 
-### Changed
-- Updated project positioning to white-label approach
-- Renamed MIGRATION_FROM_PLUGIN.md to OBSIDIAN_VAULT_COMPATIBILITY.md
-- Renamed config/obsidian-integration.example.yaml to config/obsidian-vault.example.yaml
-- Updated all documentation to use "compatible with" instead of "drop-in replacement"
-- Reframed "Obsidian Integration Mode" as "Obsidian Compatibility Mode"
-- Updated package keywords for better discoverability
+#### Advanced Capabilities
+- **PATCH Operations**: Heading, block reference, and frontmatter targeting
+- **Template Support**: Variable substitution for periodic notes
+- **Full-Text Search**: Across content and frontmatter
+- **Session Management**: Cookie-based active file tracking
+- **Obsidian Compatibility**: 100% API compatible with Obsidian Local REST API
 
-### Deprecated
-- Nothing yet
+#### Security & Production Features
+- **HTTPS**: Self-signed certificate auto-generation
+- **Authentication**: API key-based security
+- **Path Validation**: Protection against traversal attacks
+- **Async I/O**: Non-blocking file operations throughout
+- **Type Safety**: Full type hints with mypy validation
 
-### Removed
-- Nothing yet
+#### Deployment
+- **Docker Support**: Production-ready containers
+- **CLI Tool**: `markdown-vault` command with start/version
+- **Configuration**: YAML-based with environment variable overrides
+- **Logging**: Structured logging with configurable levels
 
-### Fixed
-- Nothing yet
+### White-Label Positioning
+- Professional, independent branding
+- Positioned as standalone REST API server
+- Obsidian compatibility as a feature, not primary purpose
+- Suitable for diverse use cases (CI/CD, cloud, CMS, automation)
 
-### Security
-- Nothing yet
+### Documentation
+- Comprehensive README with use cases
+- API documentation (OpenAPI/Swagger)
+- MCP integration guide (tested with with-context-mcp)
+- Development setup guide
+- Configuration reference
+- Obsidian compatibility guide
 
-## [0.2.0] - 2025-11-29
+### Testing
+- 312 comprehensive tests
+- 86% code coverage
+- Tested with production MCP tooling
+- All CRUD operations validated
 
-### Changed
-- **BREAKING**: Rebranding to white-label positioning
-  - Project now emphasizes standalone nature with Obsidian compatibility as a feature
-  - All documentation, code comments, and docstrings updated to use neutral, professional language
-  - Version bumped from 0.1.0 to 0.2.0 across all files
-  - API and functionality remain 100% compatible with previous versions
-  - Updated module docstrings to use "compatible with Obsidian API" instead of "drop-in replacement"
-  - Updated CLI help text and FastAPI descriptions to reflect white-label positioning
+### Credits
+- API compatibility inspired by Obsidian Local REST API plugin by @coddingtonbear
+- Independent implementation, not affiliated with Obsidian or Dynalist Inc.
 
-### Added
-- OBSIDIAN_VAULT_COMPATIBILITY.md guide for using with Obsidian vaults
-- Comprehensive rebranding plan documentation (REBRANDING_PLAN.md)
-
-### Removed
-- Migration-focused documentation (replaced with compatibility guide)
-
-## [0.1.0] - TBD
-
-Initial planning and design phase.
+---

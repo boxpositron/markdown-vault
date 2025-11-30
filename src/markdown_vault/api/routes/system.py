@@ -72,7 +72,7 @@ async def get_server_status(
         service="markdown-vault",
         authenticated=is_authenticated,
         versions={
-            "self": "0.2.0",
+            "self": "1.0.0",
             "api": "1.0",
         },
     )
