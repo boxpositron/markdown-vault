@@ -10,7 +10,6 @@ Provides command-line interface for:
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 import typer
 import uvicorn
@@ -62,20 +61,20 @@ def setup_logging(config: AppConfig) -> None:
 
 @app.command()
 def start(
-    config_file: Optional[str] = typer.Option(
+    config_file: str | None = typer.Option(
         None,
         "--config",
         "-c",
         help="Path to YAML configuration file",
         envvar="MARKDOWN_VAULT_CONFIG",
     ),
-    host: Optional[str] = typer.Option(
+    host: str | None = typer.Option(
         None,
         "--host",
         "-h",
         help="Server bind address (overrides config)",
     ),
-    port: Optional[int] = typer.Option(
+    port: int | None = typer.Option(
         None,
         "--port",
         "-p",

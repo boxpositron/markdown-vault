@@ -42,7 +42,7 @@ class ServerStatus(BaseModel):
                 "service": "markdown-vault",
                 "authenticated": False,
                 "versions": {
-                    "self": "1.0.0",
+                    "self": "0.0.1",
                     "api": "1.0",
                 },
             }

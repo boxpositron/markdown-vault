@@ -1,7 +1,7 @@
-# 🎉 Rebranding Complete - v1.0.0
+# 🎉 Rebranding Complete - v0.0.1
 
 **Date**: November 29, 2025  
-**Version**: 1.0.0  
+**Version**: 0.0.1  
 **Status**: ✅ Complete - White-Label Positioning Achieved
 
 ---
@@ -78,7 +78,7 @@ Successfully rebranded markdown-vault from "drop-in replacement for Obsidian plu
 - Maintained technical accuracy
 
 **Version Bump** ✅
-- Bumped to v1.0.0 across all files
+- Bumped to v0.0.1 across all files
 - Updated CHANGELOG.md with comprehensive notes
 - Version reflected in API responses
 
@@ -123,8 +123,8 @@ Successfully rebranded markdown-vault from "drop-in replacement for Obsidian plu
 **Total Commits**: 10 clean, well-documented commits
 
 ```
-84153dd chore: bump version to v1.0.0
-82a7dee docs: add v1.0.0 changelog entry for rebranding
+84153dd chore: bump version to v0.0.1
+82a7dee docs: add v0.0.1 changelog entry for rebranding
 27bd9d7 config: update obsidian-vault.example.yaml comments
 b7f0ddd config: rename and update obsidian config example
 ec61c48 docs: rename and reframe migration guide as compatibility guide
@@ -175,7 +175,7 @@ a163f9a docs: clarify server vs client environment variables
 
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Version | 0.1.0 | 1.0.0 | +0.1.0 |
+| Version | 0.1.0 | 0.0.1 | +0.1.0 |
 | "Obsidian" in docs | ~200 | ~50 | -75% |
 | White-label positioning | No | Yes | ✅ |
 | Backward compatibility | N/A | 100% | ✅ |
@@ -229,19 +229,19 @@ a163f9a docs: clarify server vs client environment variables
 ### Immediate (Done)
 - ✅ Code rebranding complete
 - ✅ Documentation updated
-- ✅ Version bumped to v1.0.0
+- ✅ Version bumped to v0.0.1
 - ✅ All tests passing
 
 ### Short Term (Optional)
 - Update blog posts/announcements with new positioning
 - Update any external documentation
-- Announce v1.0.0 with rebranding notes
+- Announce v0.0.1 with rebranding notes
 
-### Long Term (v1.0.0)
+### Long Term (v0.0.1)
 - Complete remaining Phase 4 items from plan
 - Performance testing
 - Security audit
-- Official v1.0.0 release
+- Official v0.0.1 release
 
 ---
 
@@ -253,6 +253,6 @@ a163f9a docs: clarify server vs client environment variables
 
 ---
 
-**Status**: ✅ Rebranding Complete - Ready for v1.0.0 Release
+**Status**: ✅ Rebranding Complete - Ready for v0.0.1 Release
 
 *Generated: 2025-11-29 | Rebranding Project Final Summary*
