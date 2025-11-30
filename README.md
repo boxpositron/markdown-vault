@@ -45,14 +45,14 @@ uv venv && uv sync
 uv run markdown-vault start --reload
 ```
 
-**Using Docker**
+**Using Docker (from GitHub Container Registry)**
 ```bash
 docker run -d \
   -p 27123:27123 \
   -v /path/to/vault:/vault \
   -e MARKDOWN_VAULT_VAULT__PATH=/vault \
   -e MARKDOWN_VAULT_SECURITY__API_KEY=your-key \
-  markdown-vault:latest
+  ghcr.io/boxpositron/markdown-vault:latest
 ```
 
 ### Configuration
@@ -328,7 +328,7 @@ logging:
 version: '3.8'
 services:
   markdown-vault:
-    image: markdown-vault:latest
+    image: ghcr.io/boxpositron/markdown-vault:latest
     ports:
       - "27123:27123"
     volumes:
