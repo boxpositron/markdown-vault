@@ -1,12 +1,27 @@
 # Development Environment Setup
 
-This guide explains how to set up the Docker-based development environment for markdown-vault.
+This guide explains how to set up your development environment for markdown-vault.
+
+## Recommended Setup: uv
+
+We recommend using **uv** for local development - it's a fast, modern Python package manager that makes dependency management a breeze. See [Local Development with uv](#local-development-with-uv-recommended) section below.
+
+```bash
+# Quick start with uv
+uv venv && uv sync
+source .venv/bin/activate
+uv run pytest
+```
+
+Alternatively, you can use Docker for a containerized development environment.
 
 ## Prerequisites
 
-- Docker Desktop (for macOS/Windows) or Docker Engine + Docker Compose (for Linux)
+- **uv** (recommended) - Fast Python package installer and resolver: `pip install uv`
+- **OR** Docker Desktop (for macOS/Windows) or Docker Engine + Docker Compose (for Linux)
 - Git
 - Make (optional, but recommended)
+- Python 3.10 or higher
 
 ## Quick Start
 
@@ -257,24 +272,129 @@ make clean
 
 This removes containers, volumes, and cache files.
 
-## Local Development (Without Docker)
+## Local Development with uv (Recommended)
 
-If you prefer to develop without Docker:
+`uv` is a fast Python package installer and resolver that makes dependency management much faster and more reliable.
+
+### Prerequisites
+
+Install `uv` if you haven't already:
+
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Or with pip
+pip install uv
+
+# Or with homebrew
+brew install uv
+```
 
 ### Setup
 
 ```bash
+# Create virtual environment and install dependencies
 make venv
+
+# Or manually
+uv venv           # Creates .venv/
+uv sync           # Installs all dependencies from lock file
+
+# Activate the environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+```
+
+### Development Workflow
+
+```bash
+# Sync dependencies (after pulling changes)
+make sync
+# or: uv sync
+
+# Run tests
+make local-test
+# or: uv run pytest
+
+# Run tests with coverage
+make local-test-cov
+# or: uv run pytest --cov=markdown_vault
+
+# Lint code
+make local-lint
+# or: uv run ruff check src/ tests/
+
+# Format code
+make local-format
+# or: uv run black src/ tests/
+
+# Type check
+make local-typecheck
+# or: uv run mypy src/markdown_vault
+
+# Run all QA checks
+make local-qa
+
+# Run the server
+make local-run
+# or: uv run python -m markdown_vault start --reload
+```
+
+### Adding Dependencies
+
+```bash
+# Add a runtime dependency
+make local-add PKG=requests
+# or: uv add requests
+
+# Add a development dependency
+make local-add-dev PKG=pytest-watch
+# or: uv add --dev pytest-watch
+
+# Remove a dependency
+uv remove package-name
+```
+
+### Why uv?
+
+- **Fast**: 10-100x faster than pip for installing packages
+- **Reliable**: Produces consistent, reproducible environments with lock files
+- **Simple**: Single tool for virtual environments and package management
+- **Modern**: Built-in support for pyproject.toml
+- **Compatible**: Works with existing pip/PyPI ecosystem
+
+### uv Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `uv venv` | Create a virtual environment in `.venv/` |
+| `uv sync` | Install dependencies from lock file |
+| `uv add <pkg>` | Add a dependency |
+| `uv add --dev <pkg>` | Add a dev dependency |
+| `uv remove <pkg>` | Remove a dependency |
+| `uv run <cmd>` | Run a command in the virtual environment |
+| `uv pip list` | List installed packages |
+| `uv lock` | Update the lock file |
+
+## Traditional Development (Without uv or Docker)
+
+If you prefer traditional Python virtual environments:
+
+### Setup
+
+```bash
+python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -e ".[dev]"
 ```
 
 ### Development
 
 ```bash
-make local-test
-make local-lint
-make local-format
-make local-typecheck
+pytest -v
+ruff check src/ tests/
+black src/ tests/
+mypy src/markdown_vault
 ```
 
 ## Tips

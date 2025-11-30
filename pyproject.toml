@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "markdown-vault"
@@ -57,7 +57,7 @@ watch = [
     "watchdog>=3.0.0",
 ]
 jsonlogic = [
-    "json-logic-py>=1.0.0",
+    "json-logic>=0.6.0",
 ]
 
 [project.urls]
@@ -69,8 +69,21 @@ Issues = "https://github.com/yourusername/markdown-vault/issues"
 [project.scripts]
 markdown-vault = "markdown_vault.__main__:main"
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/markdown_vault"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.25.0",
+    "black>=23.12.0",
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "types-pyyaml",
+    "types-aiofiles",
+]
 
 [tool.black]
 line-length = 88

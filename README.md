@@ -55,10 +55,16 @@ A REST API server for markdown vaults with comprehensive vault management, searc
 # Using pip (when available)
 pip install markdown-vault
 
+# Using uv (recommended for development)
+git clone https://github.com/yourusername/markdown-vault.git
+cd markdown-vault
+uv venv && uv sync
+source .venv/bin/activate
+
 # Using Docker
 docker pull markdown-vault:latest
 
-# From source
+# From source (traditional)
 git clone https://github.com/yourusername/markdown-vault.git
 cd markdown-vault
 pip install -e .

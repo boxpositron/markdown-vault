@@ -190,23 +190,35 @@ qa: lint format typecheck test ## Run all quality assurance checks
 # Package Management
 # ==========================================
 
-install: ## Install package in development mode
+install: ## Install package in development mode (Docker)
 	@echo "$(YELLOW)Installing package in development mode...$(RESET)"
 	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev \
-		pip install -e ".[dev]"
+		uv sync
 	@echo "$(GREEN)✓ Installation complete!$(RESET)"
 
-install-prod: ## Install package in production mode
+install-prod: ## Install package in production mode (Docker)
 	@echo "$(YELLOW)Installing package in production mode...$(RESET)"
 	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev \
-		pip install .
+		uv sync --no-dev
 	@echo "$(GREEN)✓ Installation complete!$(RESET)"
 
-pip-list: ## Show installed packages
-	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev pip list
+uv-list: ## Show installed packages (Docker)
+	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev uv pip list
 
-pip-outdated: ## Show outdated packages
-	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev pip list --outdated
+uv-outdated: ## Show outdated packages (Docker)
+	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev uv pip list --outdated
+
+uv-add: ## Add a new dependency (usage: make uv-add PKG=package-name)
+	@echo "$(YELLOW)Adding package $(PKG)...$(RESET)"
+	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev \
+		uv add $(PKG)
+	@echo "$(GREEN)✓ Package added!$(RESET)"
+
+uv-add-dev: ## Add a new dev dependency (usage: make uv-add-dev PKG=package-name)
+	@echo "$(YELLOW)Adding dev package $(PKG)...$(RESET)"
+	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev \
+		uv add --dev $(PKG)
+	@echo "$(GREEN)✓ Dev package added!$(RESET)"
 
 # ==========================================
 # Database/Vault Management
@@ -261,36 +273,51 @@ prune: ## Prune Docker system (careful!)
 # Local Development (without Docker)
 # ==========================================
 
-venv: ## Create local virtual environment
-	@echo "$(YELLOW)Creating virtual environment...$(RESET)"
-	python3 -m venv venv
-	./venv/bin/pip install --upgrade pip
-	./venv/bin/pip install -e ".[dev]"
+venv: ## Create local virtual environment with uv
+	@echo "$(YELLOW)Creating virtual environment with uv...$(RESET)"
+	uv venv
+	@echo "$(YELLOW)Installing dependencies...$(RESET)"
+	uv sync
 	@echo "$(GREEN)✓ Virtual environment created!$(RESET)"
-	@echo "Activate with: source venv/bin/activate"
+	@echo "Activate with: source .venv/bin/activate"
+
+sync: ## Sync dependencies with uv (local)
+	@echo "$(YELLOW)Syncing dependencies...$(RESET)"
+	uv sync
+	@echo "$(GREEN)✓ Dependencies synced!$(RESET)"
 
 local-test: ## Run tests locally
-	pytest -v
+	uv run pytest -v
 
 local-test-cov: ## Run tests with coverage locally
-	pytest --cov=markdown_vault --cov-report=html --cov-report=term-missing
+	uv run pytest --cov=markdown_vault --cov-report=html --cov-report=term-missing
 
 local-lint: ## Run linters locally
-	ruff check src/ tests/
+	uv run ruff check src/ tests/
 
 local-lint-fix: ## Run linters with auto-fix locally
-	ruff check --fix src/ tests/
+	uv run ruff check --fix src/ tests/
 
 local-format: ## Format code locally
-	black src/ tests/
+	uv run black src/ tests/
 
 local-typecheck: ## Run type checking locally
-	mypy src/markdown_vault
+	uv run mypy src/markdown_vault
 
 local-qa: local-lint local-format local-typecheck local-test ## Run all QA checks locally
 
 local-run: ## Run server locally
-	python -m markdown_vault start --reload
+	uv run python -m markdown_vault start --reload
+
+local-add: ## Add a dependency locally (usage: make local-add PKG=package-name)
+	@echo "$(YELLOW)Adding package $(PKG)...$(RESET)"
+	uv add $(PKG)
+	@echo "$(GREEN)✓ Package added!$(RESET)"
+
+local-add-dev: ## Add a dev dependency locally (usage: make local-add-dev PKG=package-name)
+	@echo "$(YELLOW)Adding dev package $(PKG)...$(RESET)"
+	uv add --dev $(PKG)
+	@echo "$(GREEN)✓ Dev package added!$(RESET)"
 
 # ==========================================
 # Utilities
