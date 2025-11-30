@@ -8,17 +8,17 @@ Tests the following endpoints:
 - GET /obsidian-local-rest-api.crt - SSL certificate download (legacy compatibility)
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 from fastapi.testclient import TestClient
-from tempfile import TemporaryDirectory
 
 from markdown_vault.core.config import (
     AppConfig,
+    LoggingConfig,
     SecurityConfig,
     ServerConfig,
     VaultConfig,
-    LoggingConfig,
 )
 from markdown_vault.main import create_app
 

@@ -12,7 +12,7 @@ This module handles:
 import os
 import secrets
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 import yaml
 from cryptography import x509
@@ -154,7 +154,7 @@ def generate_self_signed_cert(
         raise ConfigError(f"Failed to generate self-signed certificate: {e}")
 
 
-def load_yaml_config(config_path: Path) -> Dict[str, Any]:
+def load_yaml_config(config_path: Path) -> dict[str, Any]:
     """
     Load configuration from a YAML file.
 
@@ -171,7 +171,7 @@ def load_yaml_config(config_path: Path) -> Dict[str, Any]:
         if not config_path.exists():
             raise ConfigError(f"Configuration file not found: {config_path}")
 
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             config_data = yaml.safe_load(f)
 
         if config_data is None:
@@ -190,7 +190,7 @@ def load_yaml_config(config_path: Path) -> Dict[str, Any]:
         raise ConfigError(f"Failed to read configuration file: {e}")
 
 
-def merge_env_overrides(config_data: Dict[str, Any]) -> Dict[str, Any]:
+def merge_env_overrides(config_data: dict[str, Any]) -> dict[str, Any]:
     """
     Merge environment variable overrides into configuration.
 
@@ -307,7 +307,7 @@ def ensure_ssl_certificates(security_config: SecurityConfig, hostname: str) -> N
         )
 
 
-def load_config(config_path: Optional[str] = None) -> AppConfig:
+def load_config(config_path: str | None = None) -> AppConfig:
     """
     Load and validate application configuration.
 
@@ -328,7 +328,7 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         ConfigError: If configuration is invalid or required files are missing
     """
     # Start with empty config
-    config_data: Dict[str, Any] = {}
+    config_data: dict[str, Any] = {}
 
     # Load from YAML if provided
     if config_path:
@@ -354,13 +354,14 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         ensure_ssl_certificates(app_config.security, app_config.server.host)
 
     # Create vault directory if needed
-    vault_path = Path(app_config.vault.path).expanduser().resolve()
-    if app_config.vault.auto_create and not vault_path.exists():
-        try:
-            vault_path.mkdir(parents=True, exist_ok=True)
-            print(f"Created vault directory: {vault_path}")
-        except OSError as e:
-            raise ConfigError(f"Failed to create vault directory: {e}")
+    if app_config.vault is not None:
+        vault_path = Path(app_config.vault.path).expanduser().resolve()
+        if app_config.vault.auto_create and not vault_path.exists():
+            try:
+                vault_path.mkdir(parents=True, exist_ok=True)
+                print(f"Created vault directory: {vault_path}")
+            except OSError as e:
+                raise ConfigError(f"Failed to create vault directory: {e}")
 
     return app_config
 
@@ -368,14 +369,23 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
 # Import ipaddress for SSL cert generation
 import ipaddress
 
-
 __all__ = [
+    "ActiveFileConfig",
     "AppConfig",
+    "CommandsConfig",
     "ConfigError",
-    "load_config",
-    "generate_api_key",
-    "load_api_key_from_file",
-    "generate_self_signed_cert",
-    "resolve_api_key",
+    "LoggingConfig",
+    "ObsidianConfig",
+    "PerformanceConfig",
+    "PeriodicNotesConfig",
+    "SearchConfig",
+    "SecurityConfig",
+    "ServerConfig",
+    "VaultConfig",
     "ensure_ssl_certificates",
+    "generate_api_key",
+    "generate_self_signed_cert",
+    "load_api_key_from_file",
+    "load_config",
+    "resolve_api_key",
 ]

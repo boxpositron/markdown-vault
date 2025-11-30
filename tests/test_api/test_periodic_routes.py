@@ -108,7 +108,7 @@ class TestPeriodicNoteRead:
         note = daily_dir / "2025-01-15.md"
         note.write_text("# Test Daily Note\n\nContent here")
 
-        response = periodic_app.get(
+        periodic_app.get(
             "/periodic/daily?offset=today",
             headers={**api_headers, "Accept": "text/markdown"},
         )
@@ -129,7 +129,7 @@ class TestPeriodicNoteRead:
         note = daily_dir / "2025-11-29.md"  # Use a specific date
         note.write_text("---\ntitle: Daily Note\n---\n\n# Content\n")
 
-        response = periodic_app.get(
+        periodic_app.get(
             "/periodic/daily",
             headers={**api_headers, "Accept": "application/vnd.olrapi.note+json"},
         )

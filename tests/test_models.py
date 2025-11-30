@@ -3,19 +3,20 @@ Tests for Pydantic models.
 """
 
 import pytest
+
 from markdown_vault.models import (
-    Note,
-    NoteStat,
-    NoteJson,
-    ServerStatus,
     APIError,
+    Note,
+    NoteJson,
+    NoteStat,
     PatchOperation,
+    ServerStatus,
     TargetType,
 )
 from markdown_vault.models.config import (
+    AppConfig,
     ServerConfig,
     VaultConfig,
-    AppConfig,
 )
 
 

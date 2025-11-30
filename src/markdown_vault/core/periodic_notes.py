@@ -243,7 +243,7 @@ class PeriodicNotesManager:
 
 
 __all__ = [
-    "PeriodicNotesManager",
-    "PeriodicNotesError",
     "PeriodType",
+    "PeriodicNotesError",
+    "PeriodicNotesManager",
 ]

@@ -5,7 +5,8 @@ These models are compatible with Obsidian API response format for
 full compatibility.
 """
 
-from typing import Any, Dict, List
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -27,10 +28,10 @@ class NoteJson(BaseModel):
 
     path: str = Field(..., description="Path to the note relative to vault root")
     content: str = Field(..., description="Raw markdown content of the note")
-    frontmatter: Dict[str, Any] = Field(
+    frontmatter: dict[str, Any] = Field(
         default_factory=dict, description="Parsed YAML frontmatter"
     )
-    tags: List[str] = Field(
+    tags: list[str] = Field(
         default_factory=list, description="List of tags (both frontmatter and inline)"
     )
     stat: NoteStat = Field(..., description="File statistics")
@@ -57,8 +58,8 @@ class Note(BaseModel):
 
     path: str = Field(..., description="Path to the note relative to vault root")
     content: str = Field(..., description="Raw markdown content")
-    frontmatter: Dict[str, Any] = Field(default_factory=dict)
-    tags: List[str] = Field(default_factory=list)
+    frontmatter: dict[str, Any] = Field(default_factory=dict)
+    tags: list[str] = Field(default_factory=list)
 
     def to_json_format(self, stat: NoteStat) -> NoteJson:
         """Convert to JSON API response format."""

@@ -6,11 +6,12 @@ Includes built-in commands for common vault operations.
 """
 
 import logging
-from typing import Any, Callable, Awaitable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from typing import Any
 
-from markdown_vault.core.vault import VaultManager
 from markdown_vault.core.search_engine import SearchEngine
+from markdown_vault.core.vault import VaultManager
 from markdown_vault.models.api import CommandInfo
 
 logger = logging.getLogger(__name__)
@@ -131,8 +132,7 @@ class CommandRegistry:
 
         try:
             logger.info(f"Executing command: {id}")
-            result = await command.handler(vault_manager, params or {})
-            return result
+            return await command.handler(vault_manager, params or {})
         except Exception as e:
             logger.error(f"Command execution failed for '{id}': {e}")
             raise CommandError(f"Command execution failed: {e}") from e
@@ -262,8 +262,8 @@ def create_default_registry() -> CommandRegistry:
 
 __all__ = [
     "Command",
-    "CommandRegistry",
     "CommandError",
     "CommandNotFoundError",
+    "CommandRegistry",
     "create_default_registry",
 ]

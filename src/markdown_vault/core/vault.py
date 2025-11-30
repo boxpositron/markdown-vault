@@ -337,10 +337,7 @@ class VaultManager:
             InvalidPathError: If path is invalid
         """
         # Validate and resolve path
-        if directory:
-            full_path = self._validate_path(directory)
-        else:
-            full_path = self.vault_path
+        full_path = self._validate_path(directory) if directory else self.vault_path
 
         # Check if directory exists
         if not full_path.exists():
@@ -353,10 +350,7 @@ class VaultManager:
         vault_resolved = self.vault_path.resolve()
         files = []
 
-        if recursive:
-            pattern = full_path.rglob("*.md")
-        else:
-            pattern = full_path.glob("*.md")
+        pattern = full_path.rglob("*.md") if recursive else full_path.glob("*.md")
 
         for md_file in pattern:
             # Get relative path from vault root (use resolved paths for symlink compat)
@@ -497,4 +491,4 @@ class VaultManager:
         return sorted(set(tags))
 
 
-__all__ = ["VaultManager", "VaultError", "FileNotFoundError", "InvalidPathError"]
+__all__ = ["FileNotFoundError", "InvalidPathError", "VaultError", "VaultManager"]

@@ -221,14 +221,12 @@ class SearchEngine:
                     except re.error:
                         logger.warning(f"Invalid regex pattern: {pattern}")
                         return False
-                else:
-                    # Unknown operator, treat as equality
-                    if value != expected:
-                        return False
-            else:
-                # Direct equality
-                if value != expected:
+                # Unknown operator, treat as equality
+                elif value != expected:
                     return False
+            # Direct equality
+            elif value != expected:
+                return False
 
         # All fields matched
         return True

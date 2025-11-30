@@ -5,7 +5,6 @@ Uses pydantic-settings for environment variable support and validation.
 """
 
 from pathlib import Path
-from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -55,10 +54,10 @@ class VaultConfig(BaseModel):
 class SecurityConfig(BaseModel):
     """Security configuration."""
 
-    api_key: Optional[str] = Field(
+    api_key: str | None = Field(
         default=None, description="API key for authentication (auto-generated if None)"
     )
-    api_key_file: Optional[str] = Field(
+    api_key_file: str | None = Field(
         default=None, description="Path to file containing API key"
     )
     cert_path: str = Field(
@@ -88,7 +87,7 @@ class PeriodicNoteConfig(BaseModel):
     enabled: bool = Field(default=True, description="Enable this periodic note type")
     format: str = Field(..., description="Date format string")
     folder: str = Field(..., description="Folder path relative to vault")
-    template: Optional[str] = Field(
+    template: str | None = Field(
         default=None, description="Template file path (optional)"
     )
 
@@ -137,7 +136,7 @@ class ActiveFileConfig(BaseModel):
     tracking_method: str = Field(
         default="session", description="Tracking method: session | cookie | redis"
     )
-    default_file: Optional[str] = Field(
+    default_file: str | None = Field(
         default=None, description="Default file if none active"
     )
 
@@ -155,7 +154,7 @@ class CommandsConfig(BaseModel):
     """Commands API configuration."""
 
     enabled: bool = Field(default=True, description="Enable commands API")
-    custom_commands_dir: Optional[str] = Field(
+    custom_commands_dir: str | None = Field(
         default=None, description="Directory for custom command plugins"
     )
 
@@ -165,7 +164,7 @@ class LoggingConfig(BaseModel):
 
     level: str = Field(default="INFO", description="Log level")
     format: str = Field(default="json", description="Log format: json | text")
-    file: Optional[str] = Field(default=None, description="Log file path")
+    file: str | None = Field(default=None, description="Log file path")
 
     @field_validator("level")
     @classmethod
@@ -226,7 +225,7 @@ class AppConfig(BaseSettings):
     )
 
     server: ServerConfig = Field(default_factory=ServerConfig)
-    vault: Optional[VaultConfig] = None
+    vault: VaultConfig | None = None
     security: SecurityConfig = Field(default_factory=SecurityConfig)
     obsidian: ObsidianConfig = Field(default_factory=ObsidianConfig)
     periodic_notes: PeriodicNotesConfig = Field(default_factory=PeriodicNotesConfig)

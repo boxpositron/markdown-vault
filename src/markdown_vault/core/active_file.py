@@ -8,7 +8,6 @@ repeatedly specifying the file path.
 
 import logging
 import threading
-from typing import Dict
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +26,7 @@ class ActiveFileManager:
 
         Creates an empty session store and thread lock for synchronization.
         """
-        self._sessions: Dict[str, str] = {}
+        self._sessions: dict[str, str] = {}
         self._lock = threading.Lock()
         logger.info("Initialized ActiveFileManager")
 

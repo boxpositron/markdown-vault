@@ -10,8 +10,8 @@ This module creates and configures the FastAPI application with:
 """
 
 import logging
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -103,7 +103,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Startup
     config = get_app_config()
     logger.info(
-        f"Starting markdown-vault server",
+        "Starting markdown-vault server",
         extra={
             "host": config.server.host,
             "port": config.server.port,
@@ -264,8 +264,8 @@ def create_app(config: AppConfig) -> FastAPI:
 
 __all__ = [
     "create_app",
-    "get_app_config",
-    "set_app_config",
     "get_active_file_manager",
+    "get_app_config",
     "set_active_file_manager",
+    "set_app_config",
 ]

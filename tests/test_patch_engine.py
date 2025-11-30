@@ -382,7 +382,7 @@ class TestPatchOperations:
 
         # Find the line with block-1
         lines = result.split("\n")
-        block_line = [line for line in lines if "^block-1" in line][0]
+        block_line = next(line for line in lines if "^block-1" in line)
         assert "Extra text." in block_line
 
     def test_replace_block(self, engine: PatchEngine, sample_content: str) -> None:

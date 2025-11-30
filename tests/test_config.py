@@ -2,8 +2,6 @@
 Tests for configuration loading and management.
 """
 
-import os
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -18,7 +16,7 @@ from markdown_vault.core.config import (
     merge_env_overrides,
     resolve_api_key,
 )
-from markdown_vault.models.config import AppConfig, SecurityConfig, VaultConfig
+from markdown_vault.models.config import SecurityConfig
 
 
 class TestAPIKeyGeneration:
@@ -289,7 +287,7 @@ class TestFullConfigLoading:
 
         assert not vault_path.exists()
 
-        config = load_config(str(config_file))
+        load_config(str(config_file))
 
         assert vault_path.exists()
         assert vault_path.is_dir()

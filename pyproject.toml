@@ -123,8 +123,6 @@ ignore = [
     "E501",   # line too long (handled by black)
     "B008",   # do not perform function calls in argument defaults (FastAPI Depends)
     "B904",   # raise from within except (intentional design for API errors)
-    "ANN101", # missing type annotation for self
-    "ANN102", # missing type annotation for cls
     "ANN401", # dynamically typed expressions (Any)
     "S101",   # use of assert (used in tests)
     "S104",   # possible binding to all interfaces (development server)
@@ -132,13 +130,28 @@ ignore = [
     "COM812", # trailing comma (conflicts with black)
     "PLR0913", # too many arguments
     "PLR2004", # magic value comparison
+    "PLR0911", # too many return statements
+    "PLW0603", # global statement (intentional singleton pattern)
+    "PLC0415", # import outside top-level (lazy imports for performance)
+    "DTZ003",  # datetime.utcnow (used for SSL certs, not user-facing)
+    "DTZ005",  # datetime.now without tz (periodic notes use local time)
+    "DTZ001",  # datetime without tz (date calculations use local time)
+    "A002",    # builtin shadowing (id parameter is domain-appropriate)
+    "A001",    # builtin shadowing in class (FileNotFoundError is intentional)
+    "A004",    # builtin import shadowing (intentional re-export)
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"tests/**/*.py" = ["S101", "ANN", "ARG", "PLR2004"]
+"tests/**/*.py" = ["S101", "ANN", "ARG", "PLR2004", "PLC0415"]
 "src/markdown_vault/__main__.py" = ["T20"]  # allow print in CLI
 "src/markdown_vault/api/routes/*.py" = ["ARG001"]  # FastAPI dependency injection params
+"src/markdown_vault/api/deps.py" = ["ARG001"]  # FastAPI dependency injection
+"src/markdown_vault/core/config.py" = ["T201", "PTH123", "E402"]  # CLI tool, print allowed
+"src/markdown_vault/core/commands.py" = ["ARG001"]  # Handler signature consistency
+"src/markdown_vault/main.py" = ["ARG001"]  # FastAPI handlers
+"src/markdown_vault/core/periodic_notes.py" = ["ARG002"]  # Interface consistency
+"src/markdown_vault/models/api.py" = ["N815"]  # Obsidian API compatibility (errorCode)
 
 [tool.mypy]
 python_version = "3.10"

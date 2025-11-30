@@ -8,13 +8,14 @@ Tests command registry functionality including:
 - Error handling
 """
 
-import pytest
 from pathlib import Path
 
+import pytest
+
 from markdown_vault.core.commands import (
-    CommandRegistry,
     CommandError,
     CommandNotFoundError,
+    CommandRegistry,
     create_default_registry,
 )
 from markdown_vault.core.vault import VaultManager

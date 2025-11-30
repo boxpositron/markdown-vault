@@ -8,6 +8,7 @@ Supports:
 - Operations: append, prepend, replace
 """
 
+import json
 import re
 from dataclasses import dataclass
 from typing import Any
@@ -118,22 +119,21 @@ class PatchEngine:
         """
         if target_type == "frontmatter":
             return self._update_frontmatter(content, target, new_content, operation)
-        elif target_type == "block":
+        if target_type == "block":
             position = self._find_block_target(content, target)
             return self._apply_at_position(content, position, new_content, operation)
-        elif target_type == "heading":
+        if target_type == "heading":
             position = self._find_heading_target(content, target)
             if position is None and create_if_missing:
                 # Create heading at end of document
                 return self._create_heading(content, target, new_content)
-            elif position is None:
+            if position is None:
                 raise TargetNotFoundError(f"Heading not found: {target}")
             return self._apply_at_position(content, position, new_content, operation)
-        else:
-            raise InvalidTargetError(
-                f"Invalid target type: {target_type}. "
-                f"Must be 'heading', 'block', or 'frontmatter'"
-            )
+        raise InvalidTargetError(
+            f"Invalid target type: {target_type}. "
+            f"Must be 'heading', 'block', or 'frontmatter'"
+        )
 
     def _parse_heading_hierarchy(self, content: str) -> list[HeadingNode]:
         """
@@ -354,9 +354,8 @@ class PatchEngine:
         if isinstance(value, str):
             try:
                 # Try to parse as YAML/JSON
-                import json
-
-                value = json.loads(value)
+                parsed_value = json.loads(value)
+                value = parsed_value
             except (json.JSONDecodeError, ValueError):
                 # Keep as string if not valid JSON
                 pass
@@ -367,12 +366,15 @@ class PatchEngine:
             # Append to list field
             if field not in post.metadata:
                 post.metadata[field] = []
-            if not isinstance(post.metadata[field], list):
+
+            field_value = post.metadata[field]
+            if not isinstance(field_value, list):
                 raise InvalidTargetError(f"Cannot append to non-list field: {field}")
+
             if isinstance(value, list):
-                post.metadata[field].extend(value)
+                field_value.extend(value)
             else:
-                post.metadata[field].append(value)
+                field_value.append(value)
         else:
             raise InvalidTargetError(f"Invalid operation for frontmatter: {operation}")
 
@@ -421,7 +423,7 @@ class PatchEngine:
                 block_ref = line[position.end_col :]
                 line_content = line[: position.end_col].rstrip()
                 new_line = line_content + " " + new_content.strip() + block_ref
-                before = lines[: position.start_line] + [new_line]
+                before = [*lines[: position.start_line], new_line]
             else:
                 # Append as new lines
                 if not new_content.startswith("\n"):
@@ -486,15 +488,14 @@ class PatchEngine:
 
         if content:
             return content + "\n" + "\n".join(lines)
-        else:
-            return "\n".join(lines)
+        return "\n".join(lines)
 
 
 __all__ = [
+    "BlockPosition",
+    "HeadingNode",
+    "InvalidTargetError",
     "PatchEngine",
     "PatchError",
     "TargetNotFoundError",
-    "InvalidTargetError",
-    "HeadingNode",
-    "BlockPosition",
 ]

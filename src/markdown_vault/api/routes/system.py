@@ -10,14 +10,12 @@ This module provides system-level endpoints:
 
 import logging
 from pathlib import Path
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import FileResponse, PlainTextResponse
 
 import yaml
+from fastapi import APIRouter, HTTPException, Request, status
+from fastapi.responses import FileResponse, PlainTextResponse
 
-from markdown_vault.api.deps import ApiKeyDep, ConfigDep, get_config
+from markdown_vault.api.deps import ApiKeyDep, ConfigDep
 from markdown_vault.models.api import ServerStatus
 
 logger = logging.getLogger(__name__)

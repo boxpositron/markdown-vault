@@ -3,7 +3,7 @@ Pydantic models for API requests and responses.
 """
 
 from enum import Enum
-from typing import Dict, List, Optional, Any
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -33,7 +33,7 @@ class ServerStatus(BaseModel):
     ok: str = Field(default="OK", description="Status indicator")
     service: str = Field(default="markdown-vault", description="Service name")
     authenticated: bool = Field(..., description="Whether the request is authenticated")
-    versions: Dict[str, str] = Field(..., description="Version information")
+    versions: dict[str, str] = Field(..., description="Version information")
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -91,7 +91,7 @@ class CommandInfo(BaseModel):
 class CommandList(BaseModel):
     """List of available commands."""
 
-    commands: List[CommandInfo] = Field(
+    commands: list[CommandInfo] = Field(
         default_factory=list, description="Available commands"
     )
 
@@ -100,7 +100,7 @@ class SearchQuery(BaseModel):
     """Search query request."""
 
     query: str = Field(..., description="Search query string")
-    max_results: Optional[int] = Field(
+    max_results: int | None = Field(
         None, description="Maximum number of results to return"
     )
 
@@ -115,7 +115,7 @@ class SearchResult(BaseModel):
 class SearchResults(BaseModel):
     """Search results response."""
 
-    results: List[SearchResult] = Field(
+    results: list[SearchResult] = Field(
         default_factory=list, description="Search results"
     )
     total: int = Field(..., description="Total number of results")

@@ -130,21 +130,20 @@ async def read_vault_file(
             note_json = note.to_json_format(stat)
             logger.info(f"Read file (JSON): {filepath}")
             return note_json
+        # Return raw markdown (rebuild with frontmatter if present)
+        if note.frontmatter:
+            import frontmatter
+
+            post = frontmatter.Post(note.content, **note.frontmatter)
+            content = frontmatter.dumps(post)
         else:
-            # Return raw markdown (rebuild with frontmatter if present)
-            if note.frontmatter:
-                import frontmatter
+            content = note.content
 
-                post = frontmatter.Post(note.content, **note.frontmatter)
-                content = frontmatter.dumps(post)
-            else:
-                content = note.content
-
-            logger.info(f"Read file (markdown): {filepath}")
-            return PlainTextResponse(
-                content=content,
-                media_type=CONTENT_TYPE_MARKDOWN,
-            )
+        logger.info(f"Read file (markdown): {filepath}")
+        return PlainTextResponse(
+            content=content,
+            media_type=CONTENT_TYPE_MARKDOWN,
+        )
 
     except VaultFileNotFoundError as e:
         logger.warning(f"File not found: {filepath}")

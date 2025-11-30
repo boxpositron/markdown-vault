@@ -14,9 +14,9 @@ from pydantic import BaseModel, Field
 
 from markdown_vault.api.deps import ApiKeyDep, VaultPathDep
 from markdown_vault.core.commands import (
-    CommandRegistry,
     CommandError,
     CommandNotFoundError,
+    CommandRegistry,
     create_default_registry,
 )
 from markdown_vault.core.vault import VaultManager

@@ -12,7 +12,6 @@ active file without requiring the filepath in each request:
 """
 
 import logging
-from typing import Union
 
 from fastapi import APIRouter, Header, HTTPException, Request, Response, status
 from fastapi.responses import PlainTextResponse
@@ -25,6 +24,8 @@ from markdown_vault.api.deps import (
 )
 from markdown_vault.core.vault import (
     FileNotFoundError as VaultFileNotFoundError,
+)
+from markdown_vault.core.vault import (
     InvalidPathError,
     VaultManager,
 )
@@ -168,7 +169,7 @@ async def get_active_file(
     active_file_manager: ActiveFileManagerDep,
     session_id: SessionIdDep,
     accept: str = Header(default=CONTENT_TYPE_MARKDOWN),
-) -> Union[PlainTextResponse, NoteJson]:
+) -> PlainTextResponse | NoteJson:
     """
     Get the content of the currently active file.
 
@@ -203,21 +204,20 @@ async def get_active_file(
             note_json = note.to_json_format(stat)
             logger.info(f"Read active file (JSON): {filepath}")
             return note_json
+        # Return raw markdown (rebuild with frontmatter if present)
+        if note.frontmatter:
+            import frontmatter
+
+            post = frontmatter.Post(note.content, **note.frontmatter)
+            content = frontmatter.dumps(post)
         else:
-            # Return raw markdown (rebuild with frontmatter if present)
-            if note.frontmatter:
-                import frontmatter
+            content = note.content
 
-                post = frontmatter.Post(note.content, **note.frontmatter)
-                content = frontmatter.dumps(post)
-            else:
-                content = note.content
-
-            logger.info(f"Read active file (markdown): {filepath}")
-            return PlainTextResponse(
-                content=content,
-                media_type=CONTENT_TYPE_MARKDOWN,
-            )
+        logger.info(f"Read active file (markdown): {filepath}")
+        return PlainTextResponse(
+            content=content,
+            media_type=CONTENT_TYPE_MARKDOWN,
+        )
 
     except VaultFileNotFoundError as e:
         logger.warning(f"Active file not found: {filepath}")

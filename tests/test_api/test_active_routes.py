@@ -2,7 +2,6 @@
 Integration tests for active file API endpoints.
 """
 
-import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 

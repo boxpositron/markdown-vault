@@ -7,19 +7,18 @@ for HTTPS server operation, compatible with Obsidian vault requirements.
 import datetime
 import ipaddress
 from pathlib import Path
-from typing import Tuple
 
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.x509.oid import ExtensionOID, NameOID
+from cryptography.x509.oid import ExtendedKeyUsageOID, NameOID
 
 
 def generate_self_signed_certificate(
     common_name: str = "markdown-vault",
     organization: str = "markdown-vault",
     validity_days: int = 365,
-) -> Tuple[x509.Certificate, rsa.RSAPrivateKey]:
+) -> tuple[x509.Certificate, rsa.RSAPrivateKey]:
     """Generate a self-signed SSL certificate and private key.
 
     Creates a self-signed X.509 certificate with the following specifications:
@@ -110,7 +109,7 @@ def generate_self_signed_certificate(
 
     # Add Extended Key Usage for server authentication
     cert_builder = cert_builder.add_extension(
-        x509.ExtendedKeyUsage([x509.oid.ExtendedKeyUsageOID.SERVER_AUTH]),
+        x509.ExtendedKeyUsage([ExtendedKeyUsageOID.SERVER_AUTH]),
         critical=False,
     )
 
@@ -128,7 +127,7 @@ def save_certificate_and_key(
     private_key: rsa.RSAPrivateKey,
     cert_path: Path,
     key_path: Path,
-) -> Tuple[Path, Path]:
+) -> tuple[Path, Path]:
     """Save certificate and private key to PEM files.
 
     Writes the certificate and private key to the specified paths in PEM format.
@@ -195,7 +194,7 @@ def generate_and_save_certificate(
     common_name: str = "markdown-vault",
     organization: str = "markdown-vault",
     validity_days: int = 365,
-) -> Tuple[Path, Path]:
+) -> tuple[Path, Path]:
     """Generate a self-signed certificate and save it to files.
 
     Convenience function that combines certificate generation and file saving

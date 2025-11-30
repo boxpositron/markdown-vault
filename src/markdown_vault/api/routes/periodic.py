@@ -89,8 +89,7 @@ async def _get_periodic_note_path(
 
     # Convert to relative path
     try:
-        relative_path = note_path.relative_to(vault_path)
-        return relative_path
+        return note_path.relative_to(vault_path)
     except ValueError:
         # Should never happen, but handle gracefully
         raise HTTPException(
@@ -169,21 +168,20 @@ async def read_periodic_note(
             note_json = note.to_json_format(stat)
             logger.info(f"Read periodic note (JSON): {period} offset={offset}")
             return note_json
+        # Return raw markdown (rebuild with frontmatter if present)
+        if note.frontmatter:
+            import frontmatter
+
+            post = frontmatter.Post(note.content, **note.frontmatter)
+            content = frontmatter.dumps(post)
         else:
-            # Return raw markdown (rebuild with frontmatter if present)
-            if note.frontmatter:
-                import frontmatter
+            content = note.content
 
-                post = frontmatter.Post(note.content, **note.frontmatter)
-                content = frontmatter.dumps(post)
-            else:
-                content = note.content
-
-            logger.info(f"Read periodic note (markdown): {period} offset={offset}")
-            return PlainTextResponse(
-                content=content,
-                media_type=CONTENT_TYPE_MARKDOWN,
-            )
+        logger.info(f"Read periodic note (markdown): {period} offset={offset}")
+        return PlainTextResponse(
+            content=content,
+            media_type=CONTENT_TYPE_MARKDOWN,
+        )
 
     except VaultFileNotFoundError:
         logger.warning(f"Periodic note not found: {period} offset={offset}")
