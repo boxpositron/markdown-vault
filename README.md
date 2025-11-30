@@ -479,6 +479,90 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 6. Push (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
 
+## Publishing & Releases
+
+This project uses automated publishing with **OIDC Trusted Publishing** for security and convenience.
+
+### For Maintainers: Setting Up PyPI Trusted Publishing
+
+**One-time setup** (requires PyPI account with project ownership):
+
+1. **Go to PyPI Project Settings**
+   - Visit: https://pypi.org/manage/project/markdown-vault/settings/publishing/
+   - Or create pending publisher: https://pypi.org/manage/account/publishing/
+
+2. **Add GitHub as Trusted Publisher**
+   - **PyPI Project Name**: `markdown-vault`
+   - **Owner**: `boxpositron`
+   - **Repository name**: `markdown-vault`
+   - **Workflow name**: `pypi-publish.yml`
+   - **Environment name**: `pypi` (optional but recommended)
+
+3. **Repeat for TestPyPI** (for testing)
+   - Visit: https://test.pypi.org/manage/account/publishing/
+   - Use same settings but with environment name: `testpypi`
+
+### Creating a Release
+
+Releases are fully automated via GitHub Actions:
+
+```bash
+# 1. Update version in pyproject.toml
+# 2. Update CHANGELOG.md
+# 3. Commit changes
+git add pyproject.toml CHANGELOG.md
+git commit -m "chore: bump version to 0.0.2"
+
+# 4. Create and push tag
+git tag v0.0.2
+git push origin main --tags
+
+# 5. Create GitHub Release (triggers publishing)
+gh release create v0.0.2 \
+  --title "v0.0.2" \
+  --notes "See CHANGELOG.md for details" \
+  dist/*.whl dist/*.tar.gz
+```
+
+This automatically:
+- ✅ Builds Docker images (multi-platform: amd64/arm64)
+- ✅ Pushes to `ghcr.io/boxpositron/markdown-vault`
+- ✅ Publishes to TestPyPI (for verification)
+- ✅ Publishes to PyPI (production)
+- ✅ Generates SBOM and provenance attestations
+
+### Manual Publishing (Alternative)
+
+If you need to publish manually:
+
+```bash
+# Build the package
+uv build
+
+# Publish using trusted publishing (no token needed!)
+uv publish
+
+# Or publish to TestPyPI first
+uv publish --publish-url https://test.pypi.org/legacy/
+```
+
+**Note**: Manual publishing still uses OIDC when run from GitHub Actions, or requires API token when run locally.
+
+### Verification
+
+After publishing, verify the release:
+
+```bash
+# Test PyPI installation
+pip install markdown-vault==0.0.2
+
+# Test Docker image
+docker pull ghcr.io/boxpositron/markdown-vault:0.0.2
+
+# Verify attestations
+docker buildx imagetools inspect ghcr.io/boxpositron/markdown-vault:0.0.2
+```
+
 ## Changelog
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
