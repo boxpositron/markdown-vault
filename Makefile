@@ -286,25 +286,43 @@ sync: ## Sync dependencies with uv (local)
 	uv sync
 	@echo "$(GREEN)✓ Dependencies synced!$(RESET)"
 
-local-test: ## Run tests locally
-	uv run pytest -v
+local-test: ## Run tests locally (in clean environment)
+	@echo "$(YELLOW)Running tests in clean environment...$(RESET)"
+	env -i PATH="$$PATH" HOME="$$HOME" uv run pytest -v
+	@echo "$(GREEN)✓ Tests complete!$(RESET)"
 
-local-test-cov: ## Run tests with coverage locally
-	uv run pytest --cov=markdown_vault --cov-report=html --cov-report=term-missing
+local-test-cov: ## Run tests with coverage locally (in clean environment)
+	@echo "$(YELLOW)Running tests with coverage in clean environment...$(RESET)"
+	env -i PATH="$$PATH" HOME="$$HOME" uv run pytest --cov=markdown_vault --cov-report=html --cov-report=term-missing
+	@echo "$(GREEN)✓ Coverage report generated!$(RESET)"
 
 local-lint: ## Run linters locally
-	uv run ruff check src/ tests/
+	@echo "$(YELLOW)Running linters...$(RESET)"
+	env -i PATH="$$PATH" HOME="$$HOME" uv run ruff check src/ tests/
+	@echo "$(GREEN)✓ Linting complete!$(RESET)"
 
 local-lint-fix: ## Run linters with auto-fix locally
-	uv run ruff check --fix src/ tests/
+	@echo "$(YELLOW)Running linters with auto-fix...$(RESET)"
+	env -i PATH="$$PATH" HOME="$$HOME" uv run ruff check --fix src/ tests/
+	@echo "$(GREEN)✓ Auto-fix complete!$(RESET)"
 
 local-format: ## Format code locally
-	uv run black src/ tests/
+	@echo "$(YELLOW)Formatting code...$(RESET)"
+	env -i PATH="$$PATH" HOME="$$HOME" uv run black src/ tests/
+	@echo "$(GREEN)✓ Formatting complete!$(RESET)"
 
 local-typecheck: ## Run type checking locally
-	uv run mypy src/markdown_vault
+	@echo "$(YELLOW)Running type checking...$(RESET)"
+	env -i PATH="$$PATH" HOME="$$HOME" TERM="$$TERM" uv run mypy src/markdown_vault --no-color-output
+	@echo "$(GREEN)✓ Type checking complete!$(RESET)"
 
-local-qa: local-lint local-format local-typecheck local-test ## Run all QA checks locally
+local-qa: ## Run all QA checks locally (in clean environment)
+	@echo "$(BLUE)=== Running Full QA Suite ===$(RESET)"
+	@$(MAKE) local-lint
+	@$(MAKE) local-format
+	@$(MAKE) local-typecheck
+	@$(MAKE) local-test
+	@echo "$(GREEN)✓ All QA checks passed!$(RESET)"
 
 local-run: ## Run server locally
 	uv run python -m markdown_vault start --reload

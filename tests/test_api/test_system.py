@@ -106,7 +106,7 @@ class TestServerStatus:
         assert data["service"] == "markdown-vault"
         assert data["authenticated"] is False
         assert "versions" in data
-        assert data["versions"]["self"] == "0.2.0"
+        assert data["versions"]["self"] == "0.0.1"
         assert data["versions"]["api"] == "1.0"
 
     def test_server_status_with_valid_auth(

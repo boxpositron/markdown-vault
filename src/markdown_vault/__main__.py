@@ -44,9 +44,11 @@ def setup_logging(config: AppConfig) -> None:
             level=log_level,
             format="%(message)s",
             handlers=[
-                logging.FileHandler(config.logging.file)
-                if config.logging.file
-                else logging.StreamHandler()
+                (
+                    logging.FileHandler(config.logging.file)
+                    if config.logging.file
+                    else logging.StreamHandler()
+                )
             ],
         )
     else:

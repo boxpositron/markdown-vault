@@ -136,9 +136,7 @@ class PeriodicNotesManager:
         )
         return note_path
 
-    async def create_from_template(
-        self, path: Path, template_path: Path | None
-    ) -> str:
+    async def create_from_template(self, path: Path, template_path: Path | None) -> str:
         """
         Create note content from a template.
 
