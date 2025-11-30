@@ -1,19 +1,21 @@
 """
-CLI entry point for markdown-vault.
+Command-line interface for markdown-vault.
 
-Provides command-line interface for:
-- Starting the server with uvicorn
-- Configuration management
-- SSL certificate handling
+Provides commands to:
+- Start the server with various configuration options
+- Generate API keys and SSL certificates
+- Manage server lifecycle (start, stop, restart)
 """
 
-import logging
 import sys
 from pathlib import Path
+from typing import Any
 
 import typer
-import uvicorn
 from rich.console import Console
+
+# Version - keep in sync with pyproject.toml
+__version__ = "0.0.1"
 from rich.logging import RichHandler
 from rich.panel import Panel
 
@@ -215,7 +217,7 @@ def start(
 @app.command()
 def version() -> None:
     """Show version information."""
-    console.print("[bold]markdown-vault[/bold] version [green]0.2.0[/green]")
+    console.print(f"[bold]markdown-vault[/bold] version [green]{__version__}[/green]")
 
 
 def main() -> None:

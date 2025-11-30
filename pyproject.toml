@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "David Ibia", email = "pypi@boxpositron.dev"}
 ]
 keywords = ["markdown", "vault-api", "markdown-server", "rest-api", "notes", "obsidian-compatible"]
 classifiers = [
@@ -61,10 +61,10 @@ jsonlogic = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/markdown-vault"
-Documentation = "https://github.com/yourusername/markdown-vault/docs"
-Repository = "https://github.com/yourusername/markdown-vault"
-Issues = "https://github.com/yourusername/markdown-vault/issues"
+Homepage = "https://github.com/boxpositron/markdown-vault"
+Documentation = "https://github.com/boxpositron/markdown-vault/tree/main/docs"
+Repository = "https://github.com/boxpositron/markdown-vault"
+Issues = "https://github.com/boxpositron/markdown-vault/issues"
 
 [project.scripts]
 markdown-vault = "markdown_vault.__main__:main"

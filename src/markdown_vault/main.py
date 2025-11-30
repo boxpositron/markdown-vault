@@ -14,6 +14,9 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, status
+
+# Version - keep in sync with pyproject.toml
+__version__ = "0.0.1"
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -209,7 +212,7 @@ def create_app(config: AppConfig) -> FastAPI:
             "service capabilities. Provides a REST API for managing markdown "
             "notes, supporting Obsidian vault compatibility and advanced features."
         ),
-        version="0.2.0",
+        version=__version__,
         lifespan=lifespan,
         docs_url="/docs" if config.logging.level == "DEBUG" else None,
         redoc_url="/redoc" if config.logging.level == "DEBUG" else None,
@@ -257,7 +260,7 @@ def create_app(config: AppConfig) -> FastAPI:
         Returns:
             Status information
         """
-        return {"status": "ok", "version": "0.2.0"}
+        return {"status": "ok", "version": __version__}
 
     return app
 
