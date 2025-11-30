@@ -500,10 +500,6 @@ This project uses automated publishing with **OIDC Trusted Publishing** for secu
    - **Workflow name**: `pypi-publish.yml`
    - **Environment name**: `pypi` (optional but recommended)
 
-3. **Repeat for TestPyPI** (for testing)
-   - Visit: https://test.pypi.org/manage/account/publishing/
-   - Use same settings but with environment name: `testpypi`
-
 ### Creating a Release
 
 Releases are fully automated via GitHub Actions:
@@ -529,8 +525,7 @@ gh release create v0.0.2 \
 This automatically:
 - ✅ Builds Docker images (multi-platform: amd64/arm64)
 - ✅ Pushes to `ghcr.io/boxpositron/markdown-vault`
-- ✅ Publishes to TestPyPI (for verification)
-- ✅ Publishes to PyPI (production)
+- ✅ Publishes to PyPI
 - ✅ Generates SBOM and provenance attestations
 
 ### Manual Publishing (Alternative)
@@ -543,12 +538,9 @@ uv build
 
 # Publish using trusted publishing (no token needed!)
 uv publish
-
-# Or publish to TestPyPI first
-uv publish --publish-url https://test.pypi.org/legacy/
 ```
 
-**Note**: Manual publishing still uses OIDC when run from GitHub Actions, or requires API token when run locally.
+**Note**: Manual publishing from GitHub Actions uses OIDC automatically. Local publishing requires a PyPI API token.
 
 ### Verification
 
