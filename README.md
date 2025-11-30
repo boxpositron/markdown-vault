@@ -1,79 +1,65 @@
 # markdown-vault
 
-A REST API server for markdown vaults with comprehensive vault management, search, and automation capabilities. Built for CI/CD pipelines, cloud deployments, and programmatic markdown workflows with optional Obsidian compatibility.
+A production-ready REST API server for markdown vault management with comprehensive search, automation, and optional Obsidian compatibility. Built for CI/CD pipelines, cloud deployments, and programmatic markdown workflows.
+
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
-**markdown-vault** is a standalone HTTP service that provides a secure REST API for managing markdown files and vaults. Whether you're building automation tools, integrating markdown into your CI/CD pipeline, or need programmatic access to your notes, markdown-vault provides a robust, production-ready solution.
+**markdown-vault** is a standalone HTTP service providing a secure REST API for managing markdown files and vaults. Perfect for automation tools, CI/CD pipelines, or programmatic note access.
 
-**What it is**: An independent REST API server for markdown vault operations
+**What it is**: Independent REST API server for markdown vault operations  
 **What it's not**: Not an Obsidian plugin - runs as a standalone service with optional Obsidian vault support
 
-### Operating Modes
+### Key Features
 
-1. **Standalone Mode**: Manage any markdown vault independently with full API control
-2. **Obsidian Compatibility Mode**: Point it at an Obsidian vault for API-compatible access to existing vaults
-
-## Key Features
-
-### Core Capabilities
-- **Full CRUD Operations**: Create, read, update, and delete markdown files via REST API
-- **Advanced PATCH Operations**: Targeted updates with heading, block reference, and frontmatter selectors
-- **Periodic Notes**: Built-in support for daily, weekly, monthly, quarterly, and yearly notes
-- **Search Engine**: Simple text search and complex JSONLogic-based queries
-- **Vault Management**: File listing, metadata access, and vault-wide operations
-
-### Production Ready
-- **Secure by Default**: HTTPS with API key authentication
-- **Always Available**: 24/7 service independent of desktop applications
-- **Docker Support**: Container images for easy deployment
-- **Cloud Native**: Deploy to any server, container platform, or cloud provider
-- **High Performance**: Dedicated service optimized for API operations
-- **Concurrent Access**: Manage multiple vaults simultaneously
-
-### Extensibility
-- **Clean API Design**: RESTful endpoints with comprehensive OpenAPI documentation
-- **Flexible Configuration**: YAML-based configuration with environment variable support
-- **Format Support**: JSON and Markdown response formats
-- **Webhook Ready**: Architecture designed for easy feature additions
-
-## Use Cases
-
-- **CI/CD Integration**: Automate documentation updates in your build pipeline
-- **Cloud Automation**: Run as a microservice for markdown-based workflows
-- **Script Integration**: Programmatic note creation and updates from any language
-- **Content Management**: Headless CMS for markdown-based content
-- **Knowledge Base API**: REST API for documentation and wiki systems
-- **Development Tools**: Backend for markdown editor integrations
-- **Obsidian Automation**: API access to Obsidian vaults without desktop dependency
+- **Full CRUD Operations** - Create, read, update, delete markdown files via REST API
+- **Advanced PATCH** - Targeted updates with heading/block/frontmatter selectors
+- **Periodic Notes** - Daily, weekly, monthly, quarterly, yearly note support
+- **Powerful Search** - Text search and JSONLogic-based complex queries
+- **Secure by Default** - HTTPS with API key authentication
+- **Production Ready** - Docker support, 24/7 availability, cloud-native
+- **Obsidian Compatible** - API-compatible with Obsidian Local REST API plugin
 
 ## Quick Start
 
 ### Installation
 
+**Using uvx (Recommended - No Installation Required)**
 ```bash
-# Using pip (when available)
-pip install markdown-vault
+uvx markdown-vault start --reload
+```
 
-# Using uv (recommended for development)
-git clone https://github.com/yourusername/markdown-vault.git
+**Using pip**
+```bash
+pip install markdown-vault
+markdown-vault start --reload
+```
+
+**Using uv (Development)**
+```bash
+git clone https://github.com/boxpositron/markdown-vault.git
 cd markdown-vault
 uv venv && uv sync
-source .venv/bin/activate
+uv run markdown-vault start --reload
+```
 
-# Using Docker
-docker pull markdown-vault:latest
-
-# From source (traditional)
-git clone https://github.com/yourusername/markdown-vault.git
-cd markdown-vault
-pip install -e .
+**Using Docker**
+```bash
+docker run -d \
+  -p 27123:27123 \
+  -v /path/to/vault:/vault \
+  -e MARKDOWN_VAULT_VAULT__PATH=/vault \
+  -e MARKDOWN_VAULT_SECURITY__API_KEY=your-key \
+  markdown-vault:latest
 ```
 
 ### Configuration
 
-Create a `config.yaml`:
+**Method 1: Config File**
 
+Create `config.yaml`:
 ```yaml
 server:
   host: "127.0.0.1"
@@ -82,76 +68,96 @@ server:
 
 vault:
   path: "/path/to/your/vault"
-  
+  auto_create: true
+
 security:
-  api_key: "your-api-key-here"
+  api_key: "your-secure-api-key-here"
+  auto_generate_cert: true
 ```
 
-### Running
+**Method 2: Environment Variables**
+```bash
+export MARKDOWN_VAULT_SERVER__PORT=27123
+export MARKDOWN_VAULT_VAULT__PATH=/path/to/vault
+export MARKDOWN_VAULT_SECURITY__API_KEY=your-key
+markdown-vault start
+```
+
+**Method 3: CLI Flags**
+```bash
+markdown-vault start --config config.yaml --reload
+```
+
+### First Run
 
 ```bash
-# Start the server
-markdown-vault start --config config.yaml
-
 # Generate an API key
 markdown-vault generate-key
 
-# Initialize a new vault configuration
-markdown-vault init --vault /path/to/vault
+# Start with auto-generated cert
+markdown-vault start --reload
+
+# Access API docs
+open https://localhost:27123/docs
 ```
 
 ## API Documentation
 
-Once running, visit `https://localhost:27123/docs` for interactive API documentation.
+Visit `https://localhost:27123/docs` for interactive Swagger documentation.
 
 ### Core Endpoints
 
 ```
 # Vault Operations
 GET    /vault/{filepath}        # Read file
-PUT    /vault/{filepath}        # Create/update file
-POST   /vault/{filepath}        # Append to file
-PATCH  /vault/{filepath}        # Partial update
-DELETE /vault/{filepath}        # Delete file
+PUT    /vault/{filepath}        # Create/update
+POST   /vault/{filepath}        # Append
+PATCH  /vault/{filepath}        # Targeted update
+DELETE /vault/{filepath}        # Delete
 GET    /vault/                  # List files
 
-# Active File (Obsidian compatibility)
-GET    /active/                 # Get currently active file
-PUT    /active/                 # Update active file
-POST   /active/                 # Append to active file
-PATCH  /active/                 # Partial update
-DELETE /active/                 # Delete active file
-
 # Periodic Notes
-GET    /periodic/{period}/      # Get periodic note
-PUT    /periodic/{period}/      # Update periodic note
-POST   /periodic/{period}/      # Append to periodic note
-PATCH  /periodic/{period}/      # Partial update
-DELETE /periodic/{period}/      # Delete periodic note
+GET    /periodic/daily/         # Get today's note
+GET    /periodic/weekly/        # Get this week's note
+GET    /periodic/monthly/       # Get this month's note
+PUT    /periodic/daily/         # Update today's note
+POST   /periodic/daily/         # Append to today's note
 
 # Search
-POST   /search/simple/          # Simple text search
-POST   /search/                 # Complex JSONLogic search
+POST   /search/simple/          # Text search
+POST   /search/                 # JSONLogic search
+
+# System
+GET    /                        # Server status
+GET    /_/server/status         # Detailed status
 ```
 
-## PATCH Operations
+### Authentication
 
-Advanced content targeting for precise updates:
-
-### Heading Targeting
+All requests require an API key:
 ```bash
-# Append content under a specific heading
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  https://localhost:27123/vault/note.md
+```
+
+## Advanced Features
+
+### PATCH Operations
+
+**Heading Targeting**
+```bash
+# Append under specific heading
 curl -X PATCH https://localhost:27123/vault/note.md \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Operation: append" \
   -H "Target-Type: heading" \
-  -H "Target: Heading 1::Subheading 1:1" \
-  -d "New content here"
+  -H "Target: Main Heading::Sub Heading:1" \
+  -d "New content"
 ```
 
-### Block Reference Targeting
+**Block Reference**
 ```bash
-# Update content at a block reference
+# Update at block reference
 curl -X PATCH https://localhost:27123/vault/note.md \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Operation: replace" \
@@ -160,96 +166,164 @@ curl -X PATCH https://localhost:27123/vault/note.md \
   -d "Updated content"
 ```
 
-### Frontmatter Targeting
+**Frontmatter**
 ```bash
-# Update YAML frontmatter field
+# Update YAML frontmatter
 curl -X PATCH https://localhost:27123/vault/note.md \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Operation: replace" \
   -H "Target-Type: frontmatter" \
   -H "Target: tags" \
   -H "Content-Type: application/json" \
-  -d '["tag1", "tag2", "tag3"]'
+  -d '["new", "tags"]'
 ```
 
-## Response Formats
+### Search Examples
 
-### Markdown Format
+**Simple Text Search**
 ```bash
-curl -H "Accept: text/markdown" https://localhost:27123/vault/note.md
+curl -X POST https://localhost:27123/search/simple/ \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "search term"}'
 ```
 
-### JSON Format (with metadata)
+**Complex JSONLogic Search**
 ```bash
-curl -H "Accept: application/vnd.olrapi.note+json" \
-  https://localhost:27123/vault/note.md
+curl -X POST https://localhost:27123/search/ \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": {
+      "and": [
+        {"in": ["tag1", {"var": "frontmatter.tags"}]},
+        {">=": [{"var": "frontmatter.priority"}, 5]}
+      ]
+    }
+  }'
 ```
 
-Returns:
-```json
-{
-  "path": "note.md",
-  "content": "# My Note\n\nContent here",
-  "frontmatter": {
-    "tags": ["note"],
-    "date": "2025-01-01"
-  },
-  "tags": ["#inline-tag"],
-  "stat": {
-    "ctime": 1234567890,
-    "mtime": 1234567891,
-    "size": 1024
-  }
-}
-```
+## Development
 
-## Working with Obsidian Vaults
+### Prerequisites
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) (recommended) or pip
 
-markdown-vault provides **full API compatibility** with the Obsidian Local REST API plugin, making it easy to work with existing Obsidian vaults or integrate with Obsidian-aware tools.
+### Setup
 
-### Configuration for Obsidian Vaults
-
-1. **Point to your Obsidian vault**:
-   ```yaml
-   vault:
-     path: "/Users/you/Documents/MyObsidianVault"
-   ```
-
-2. **Enable Obsidian integration features**:
-   ```yaml
-   obsidian:
-     enabled: true              # Respect .obsidian/ directory
-     config_sync: true          # Read periodic notes settings from Obsidian
-   ```
-
-3. **Use the API**:
-   - API runs on port 27123 (same as Obsidian Local REST API plugin)
-   - All endpoints are API-compatible with existing clients
-   - Works whether or not Obsidian is running
-
-### Advantages for Obsidian Users
-
-- **Continuous Availability**: Access your vault via API even when Obsidian is closed
-- **Server Deployment**: Run on servers for remote access to your Obsidian vault
-- **Automation**: Build scripts and integrations without desktop dependency
-- **Performance**: Dedicated service optimized for API operations
-- **Multiple Vaults**: Access multiple Obsidian vaults concurrently
-
-**Migrating from the Obsidian plugin?** See our [Migration Guide](./docs/MIGRATION_FROM_PLUGIN.md) for step-by-step instructions.
-
-## Deployment Options
-
-### Docker Deployment
 ```bash
-docker run -d \
-  -p 27123:27123 \
-  -v /path/to/vault:/vault \
-  -e VAULT_PATH=/vault \
-  -e API_KEY=your-key \
-  markdown-vault:latest
+# Clone repository
+git clone https://github.com/boxpositron/markdown-vault.git
+cd markdown-vault
+
+# Install with uv (recommended)
+uv venv
+uv sync
+source .venv/bin/activate  # or `.venv\Scripts\activate` on Windows
+
+# Or install with pip
+pip install -e ".[dev]"
 ```
+
+### Development Commands
+
+```bash
+# Run tests
+make local-test                    # or: uv run pytest
+make local-test-cov               # with coverage
+
+# Code quality
+make local-lint                    # ruff linting
+make local-format                  # black formatting
+make local-typecheck              # mypy type checking
+make local-typecheck-pyright      # pyright type checking
+
+# Run all QA checks
+make local-qa                      # lint + format + typecheck + test
+
+# Run server
+make local-run                     # or: uv run markdown-vault start --reload
+```
+
+### Project Structure
+
+```
+markdown-vault/
+├── src/markdown_vault/
+│   ├── api/              # FastAPI routes and dependencies
+│   ├── core/             # Business logic (vault, search, patch)
+│   ├── models/           # Pydantic models
+│   └── utils/            # Utilities (crypto, dates)
+├── tests/                # 351 tests, 86% coverage
+├── docs/                 # Additional documentation
+├── config/               # Example configurations
+└── examples/             # Usage examples
+```
+
+## Configuration Reference
+
+### Server Configuration
+
+```yaml
+server:
+  host: "127.0.0.1"          # Bind address
+  port: 27123                 # Port number
+  https: true                 # Enable HTTPS
+  reload: false               # Auto-reload on changes (dev only)
+```
+
+### Vault Configuration
+
+```yaml
+vault:
+  path: "/path/to/vault"      # Vault directory (required)
+  auto_create: true            # Create directory if missing
+  watch_files: false           # Watch for file changes
+  respect_gitignore: true      # Honor .gitignore files
+```
+
+### Security Configuration
+
+```yaml
+security:
+  api_key: "your-key"          # API authentication key
+  cert_path: "./certs/server.crt"
+  key_path: "./certs/server.key"
+  auto_generate_cert: true     # Generate self-signed cert
+```
+
+### Periodic Notes
+
+```yaml
+periodic_notes:
+  daily:
+    enabled: true
+    format: "YYYY-MM-DD"
+    folder: "daily"
+    template: "templates/daily.md"
+  weekly:
+    enabled: true
+    format: "YYYY-[W]WW"
+    folder: "weekly"
+  monthly:
+    enabled: true
+    format: "YYYY-MM"
+    folder: "monthly"
+```
+
+### Logging
+
+```yaml
+logging:
+  level: "INFO"                # DEBUG, INFO, WARNING, ERROR
+  format: "json"               # json or text
+  file: null                   # Log file path (optional)
+```
+
+## Deployment
 
 ### Docker Compose
+
 ```yaml
 version: '3.8'
 services:
@@ -261,37 +335,170 @@ services:
       - ./vault:/vault
       - ./config.yaml:/app/config.yaml
     environment:
-      - CONFIG_PATH=/app/config.yaml
+      - MARKDOWN_VAULT_VAULT__PATH=/vault
+      - MARKDOWN_VAULT_SECURITY__API_KEY=${API_KEY}
+    restart: unless-stopped
 ```
 
 ### Systemd Service
-See [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for production deployment guides.
 
-## Project Status
+```ini
+[Unit]
+Description=Markdown Vault REST API
+After=network.target
 
-This project is currently in active development. See [PLAN.md](./PLAN.md) for the implementation roadmap.
+[Service]
+Type=simple
+User=markdown
+WorkingDirectory=/opt/markdown-vault
+Environment="MARKDOWN_VAULT_VAULT__PATH=/data/vault"
+Environment="MARKDOWN_VAULT_SECURITY__API_KEY=your-key"
+ExecStart=/opt/markdown-vault/.venv/bin/markdown-vault start
+Restart=always
 
-## Documentation
+[Install]
+WantedBy=multi-user.target
+```
 
-- [Configuration Guide](./docs/CONFIGURATION.md) - Complete configuration reference
-- [Migration Guide](./docs/MIGRATION_FROM_PLUGIN.md) - Moving from Obsidian Local REST API plugin
-- [Implementation Plan](./docs/PLAN.md) - Detailed development roadmap
-- [Project Summary](./docs/PROJECT_SUMMARY.md) - Executive overview
-- [Documentation Setup](./docs/DOCUMENTATION_SETUP.md) - Documentation architecture
-- [API Reference](./docs/API.md) - (Coming soon)
+### Environment Variables
+
+All configuration can be set via environment variables with the prefix `MARKDOWN_VAULT_`:
+
+```bash
+MARKDOWN_VAULT_SERVER__HOST=0.0.0.0
+MARKDOWN_VAULT_SERVER__PORT=8080
+MARKDOWN_VAULT_SERVER__HTTPS=false
+MARKDOWN_VAULT_VAULT__PATH=/data/vault
+MARKDOWN_VAULT_SECURITY__API_KEY=your-secure-key
+MARKDOWN_VAULT_LOGGING__LEVEL=DEBUG
+```
+
+## Obsidian Compatibility
+
+markdown-vault is **fully compatible** with the Obsidian Local REST API plugin, allowing you to:
+
+- Access Obsidian vaults via API without the desktop app running
+- Use existing Obsidian-aware tools and integrations
+- Deploy Obsidian vault access to servers
+- Access multiple Obsidian vaults simultaneously
+
+### Configuration for Obsidian
+
+```yaml
+vault:
+  path: "/Users/you/Documents/MyObsidianVault"
+
+obsidian:
+  enabled: true               # Respect .obsidian/ directory
+  config_sync: true           # Read Obsidian's periodic notes config
+```
+
+### API Endpoints
+
+Uses the same default port (27123) and endpoints as the Obsidian plugin:
+- Compatible with all Obsidian Local REST API clients
+- Drop-in replacement for automation scripts
+- Works whether Obsidian is running or not
+
+## Use Cases
+
+- **CI/CD Integration** - Auto-update documentation in build pipelines
+- **Cloud Automation** - Run as microservice for markdown workflows
+- **Content Management** - Headless CMS for markdown content
+- **Knowledge Base API** - REST API for documentation systems
+- **Script Integration** - Programmatic notes from any language
+- **Obsidian Automation** - API access without desktop dependency
+- **Multi-Vault Management** - Access multiple vaults concurrently
+
+## Testing
+
+```bash
+# Run all tests
+make local-test
+
+# With coverage
+make local-test-cov
+
+# Single test file
+uv run pytest tests/test_vault.py -v
+
+# Single test
+uv run pytest tests/test_vault.py::test_create_file -v
+
+# Watch mode (requires pytest-watch)
+pytest-watch
+```
+
+**Test Stats**: 351 tests, 86% coverage
+
+## Troubleshooting
+
+### SSL Certificate Issues
+
+```bash
+# Generate new self-signed certificate
+markdown-vault start --generate-cert
+
+# Use HTTP instead (development only)
+markdown-vault start --no-https
+```
+
+### Permission Errors
+
+```bash
+# Ensure vault directory is writable
+chmod -R u+w /path/to/vault
+
+# Or set auto_create in config
+vault:
+  auto_create: true
+```
+
+### Port Already in Use
+
+```bash
+# Use different port
+markdown-vault start --port 8080
+
+# Or set in config
+server:
+  port: 8080
+```
 
 ## Contributing
 
-Contributions welcome! This is an open-source project aimed at improving markdown vault automation and programmatic access.
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+### Quick Contribution Guide
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes with tests
+4. Run QA checks (`make local-qa`)
+5. Commit (`git commit -m 'Add amazing feature'`)
+6. Push (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
 ## License
 
-MIT License - See [LICENSE](./LICENSE) for details
+MIT License - See [LICENSE](LICENSE) for details.
 
-## Credits and Acknowledgments
+## Author
 
-This project implements API compatibility with the [Obsidian Local REST API plugin](https://github.com/coddingtonbear/obsidian-local-rest-api) created by [@coddingtonbear](https://github.com/coddingtonbear). The plugin's excellent API design served as the foundation for this standalone implementation.
+**David Ibia** - [pypi@boxpositron.dev](mailto:pypi@boxpositron.dev)
 
-[Obsidian](https://obsidian.md) is a trademark of Dynalist Inc. This project is an independent implementation and is not affiliated with, endorsed by, or sponsored by Obsidian or Dynalist Inc.
+## Credits
+
+API compatibility with [Obsidian Local REST API](https://github.com/coddingtonbear/obsidian-local-rest-api) plugin by [@coddingtonbear](https://github.com/coddingtonbear).
+
+[Obsidian](https://obsidian.md) is a trademark of Dynalist Inc. This project is independent and not affiliated with Obsidian or Dynalist Inc.
+
+## Links
+
+- **Repository**: https://github.com/boxpositron/markdown-vault
+- **Issues**: https://github.com/boxpositron/markdown-vault/issues
+- **PyPI**: https://pypi.org/project/markdown-vault/ (when published)
