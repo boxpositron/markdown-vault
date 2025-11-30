@@ -179,10 +179,18 @@ format-check: ## Check code formatting without changes
 		black --check src/ tests/
 
 typecheck: ## Run type checking with mypy
-	@echo "$(YELLOW)Running type checks...$(RESET)"
+	@echo "$(YELLOW)Running mypy type checks...$(RESET)"
 	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev \
 		mypy src/markdown_vault
-	@echo "$(GREEN)✓ Type checking complete!$(RESET)"
+	@echo "$(GREEN)✓ Mypy type checking complete!$(RESET)"
+
+typecheck-pyright: ## Run type checking with pyright
+	@echo "$(YELLOW)Running pyright type checks...$(RESET)"
+	docker-compose -f $(DEV_COMPOSE) exec markdown-vault-dev \
+		pyright src/markdown_vault
+	@echo "$(GREEN)✓ Pyright type checking complete!$(RESET)"
+
+typecheck-all: typecheck typecheck-pyright ## Run both mypy and pyright
 
 qa: lint format typecheck test ## Run all quality assurance checks
 
@@ -311,10 +319,21 @@ local-format: ## Format code locally
 	env -i PATH="$$PATH" HOME="$$HOME" uv run black src/ tests/
 	@echo "$(GREEN)✓ Formatting complete!$(RESET)"
 
-local-typecheck: ## Run type checking locally
-	@echo "$(YELLOW)Running type checking...$(RESET)"
+local-typecheck: ## Run type checking with mypy locally
+	@echo "$(YELLOW)Running mypy type checking...$(RESET)"
 	env -i PATH="$$PATH" HOME="$$HOME" TERM="$$TERM" uv run mypy src/markdown_vault --no-color-output
-	@echo "$(GREEN)✓ Type checking complete!$(RESET)"
+	@echo "$(GREEN)✓ Mypy type checking complete!$(RESET)"
+
+local-typecheck-pyright: ## Run type checking with pyright locally
+	@echo "$(YELLOW)Running pyright type checking...$(RESET)"
+	env -i PATH="$$PATH" HOME="$$HOME" uv run pyright src/markdown_vault
+	@echo "$(GREEN)✓ Pyright type checking complete!$(RESET)"
+
+local-typecheck-all: ## Run both mypy and pyright type checking
+	@echo "$(BLUE)=== Running All Type Checkers ===$(RESET)"
+	@$(MAKE) local-typecheck
+	@$(MAKE) local-typecheck-pyright
+	@echo "$(GREEN)✓ All type checkers passed!$(RESET)"
 
 local-qa: ## Run all QA checks locally (in clean environment)
 	@echo "$(BLUE)=== Running Full QA Suite ===$(RESET)"

@@ -1,14 +1,28 @@
 # Agent Guidelines for markdown-vault
 
 ## Build/Test Commands
+
+### Local Development (with uv - PREFERRED)
+- **Run all tests**: `make local-test` or `uv run pytest`
+- **Run single test**: `uv run pytest tests/test_file.py::test_function_name -v`
+- **Run with coverage**: `make local-test-cov` or `uv run pytest --cov=markdown_vault --cov-report=term-missing`
+- **Lint code**: `make local-lint` or `uv run ruff check src/ tests/`
+- **Auto-fix lint**: `make local-lint-fix` or `uv run ruff check --fix src/ tests/`
+- **Format code**: `make local-format` or `uv run black src/ tests/`
+- **Type check (mypy)**: `make local-typecheck` or `uv run mypy src/markdown_vault`
+- **Type check (pyright)**: `make local-typecheck-pyright` or `uv run pyright src/markdown_vault`
+- **Type check (both)**: `make local-typecheck-all`
+- **Run all QA**: `make local-qa` (runs lint, format, typecheck, test in clean env)
+- **Run server**: `make local-run` or `uv run python -m markdown_vault start --reload`
+
+### Docker Development
 - **Run all tests**: `make test` or `pytest`
-- **Run single test**: `pytest tests/test_file.py::test_function_name -v`
-- **Run with coverage**: `make test-cov` or `pytest --cov=markdown_vault --cov-report=term-missing`
 - **Lint code**: `make lint` or `ruff check src/ tests/`
 - **Format code**: `make format` or `black src/ tests/`
-- **Type check**: `make typecheck` or `mypy src/markdown_vault`
+- **Type check (mypy)**: `make typecheck` or `mypy src/markdown_vault`
+- **Type check (pyright)**: `make typecheck-pyright` or `pyright src/markdown_vault`
+- **Type check (both)**: `make typecheck-all`
 - **Run all QA**: `make qa` (runs lint, format, typecheck, test)
-- **Run server**: `make run-server` or `python -m markdown_vault start --reload`
 - **Docker shell**: `make shell` (for Docker development)
 
 ## Code Style
